@@ -1,117 +1,84 @@
 """
-test_sheets.py —— 测试 AI 表格工作表（Sheet）相关接口
-  - GET  /v1.0/doc/workbooks/{workbookId}/sheets          列出所有工作表
-  - GET  /v1.0/doc/workbooks/{workbookId}/sheets/{sheetId}  查询单个工作表
-  - POST /v1.0/doc/workbooks/{workbookId}/sheets          创建工作表
-  - DELETE /v1.0/doc/workbooks/{workbookId}/sheets/{sheetId}  删除工作表
-
-所需权限：Doc.Sheet.Read、Doc.Sheet.Write（写入测试）
-测试文件：https://alidocs.dingtalk.com/i/nodes/MyQA2dXW7ePBO49BSMwxNm35JzlwrZgb
+测试：工作表（Sheet）管理
+API: /v1.0/notable/bases/{base_id}/sheets[/{sheet_id}]
+SDK: notable_1_0 - get_all_sheets, get_sheet, create_sheet, delete_sheet
 """
-import os
 import requests
+import pytest
 
-BASE = "https://api.dingtalk.com"
-TEST_WORKBOOK_ID = os.environ.get("TEST_WORKBOOK_ID", "MyQA2dXW7ePBO49BSMwxNm35JzlwrZgb")
-ENABLE_WRITE = os.environ.get("ENABLE_WRITE_TESTS", "0") == "1"
-
-
-# ── 只读测试 ────────────────────────────────────────────────────────────
+BASE_URL = "https://api.dingtalk.com/v1.0/notable"
 
 
-def test_list_sheets(api_headers):
-    """列出工作簿中所有工作表，校验至少存在一个工作表"""
+def test_list_sheets(token, operator_id, base_id, api_headers):
+    """GET /sheets → value 列表，每项有 id 和 name"""
     resp = requests.get(
-        f"{BASE}/v1.0/doc/workbooks/{TEST_WORKBOOK_ID}/sheets",
+        f"{BASE_URL}/bases/{base_id}/sheets?operatorId={operator_id}",
         headers=api_headers,
         timeout=15,
     )
     assert resp.status_code == 200, resp.text
     data = resp.json()
-    sheets = data.get("sheets", data)
-    assert isinstance(sheets, list), f"期望返回列表，实际：{data}"
-    assert len(sheets) >= 1, "工作簿中应至少有一个工作表"
+    assert "value" in data, f"响应缺少 'value' 字段：{data}"
+    sheets = data["value"]
+    assert isinstance(sheets, list), "value 应为列表"
+    assert len(sheets) > 0, "工作表列表不应为空"
+    for sheet in sheets:
+        assert "id" in sheet, f"工作表缺少 'id'：{sheet}"
+        assert "name" in sheet, f"工作表缺少 'name'：{sheet}"
 
-    # 校验字段结构
-    first = sheets[0]
-    assert "sheetId" in first, f"工作表缺少 sheetId 字段：{first}"
-    assert "name" in first, f"工作表缺少 name 字段：{first}"
 
-
-def test_get_single_sheet(api_headers):
-    """先获取工作表列表，再查询第一个工作表的详情"""
-    # Step 1：获取列表，取第一个 sheetId
-    list_resp = requests.get(
-        f"{BASE}/v1.0/doc/workbooks/{TEST_WORKBOOK_ID}/sheets",
-        headers=api_headers,
-        timeout=15,
-    )
-    assert list_resp.status_code == 200, list_resp.text
-    sheets = list_resp.json().get("sheets", list_resp.json())
-    assert sheets, "获取工作表列表为空，无法继续"
-    sheet_id = sheets[0]["sheetId"]
-    sheet_name = sheets[0]["name"]
-
-    # Step 2：查询单个工作表
+def test_get_sheet(token, operator_id, base_id, api_headers, test_sheet):
+    """GET /sheets/{sheet_id} → 返回 id 和 name"""
+    sheet_id, _ = test_sheet
     resp = requests.get(
-        f"{BASE}/v1.0/doc/workbooks/{TEST_WORKBOOK_ID}/sheets/{sheet_id}",
+        f"{BASE_URL}/bases/{base_id}/sheets/{sheet_id}?operatorId={operator_id}",
         headers=api_headers,
         timeout=15,
     )
     assert resp.status_code == 200, resp.text
     data = resp.json()
-    assert data.get("sheetId") == sheet_id, data
-    assert data.get("name") == sheet_name, data
+    assert data.get("id") == sheet_id, f"返回的 id 不匹配：{data}"
+    assert "name" in data, f"响应缺少 'name'：{data}"
 
 
-# ── 写入测试（需 ENABLE_WRITE_TESTS=1） ────────────────────────────────
-
-
-def test_create_and_delete_sheet(api_headers):
-    """创建一个临时工作表，验证返回结构后立即删除"""
-    if not ENABLE_WRITE:
-        import pytest
-        pytest.skip("写入测试未启用，设置 ENABLE_WRITE_TESTS=1 开启")
-
-    new_name = "pytest_临时工作表"
-
-    # 创建
+def test_create_and_delete_sheet(token, operator_id, base_id, api_headers):
+    """POST /sheets 创建，验证存在，DELETE 删除，验证不再存在"""
+    # Create
     create_resp = requests.post(
-        f"{BASE}/v1.0/doc/workbooks/{TEST_WORKBOOK_ID}/sheets",
+        f"{BASE_URL}/bases/{base_id}/sheets?operatorId={operator_id}",
         headers=api_headers,
-        json={"name": new_name},
+        json={"name": "__pytest_create_delete__", "fields": [{"name": "col1", "type": "text"}]},
         timeout=15,
     )
-    assert create_resp.status_code in (200, 201), create_resp.text
+    assert create_resp.status_code == 200, create_resp.text
     created = create_resp.json()
-    new_sheet_id = created.get("sheetId")
-    assert new_sheet_id, f"创建工作表未返回 sheetId：{created}"
-    assert created.get("name") == new_name, created
+    assert "id" in created, f"创建响应缺少 'id'：{created}"
+    assert created.get("name") == "__pytest_create_delete__"
+    new_id = created["id"]
 
-    # 验证出现在列表中
+    # Verify in list
     list_resp = requests.get(
-        f"{BASE}/v1.0/doc/workbooks/{TEST_WORKBOOK_ID}/sheets",
+        f"{BASE_URL}/bases/{base_id}/sheets?operatorId={operator_id}",
         headers=api_headers,
         timeout=15,
     )
-    assert list_resp.status_code == 200, list_resp.text
-    sheet_ids = [s["sheetId"] for s in list_resp.json().get("sheets", [])]
-    assert new_sheet_id in sheet_ids, f"新工作表未出现在列表中：{sheet_ids}"
+    ids = [s["id"] for s in list_resp.json().get("value", [])]
+    assert new_id in ids, f"新创建的工作表 {new_id} 未出现在列表中"
 
-    # 删除
+    # Delete
     del_resp = requests.delete(
-        f"{BASE}/v1.0/doc/workbooks/{TEST_WORKBOOK_ID}/sheets/{new_sheet_id}",
-        headers=api_headers,
+        f"{BASE_URL}/bases/{base_id}/sheets/{new_id}?operatorId={operator_id}",
+        headers={k: v for k, v in api_headers.items() if k != "Content-Type"},
         timeout=15,
     )
-    assert del_resp.status_code in (200, 204), del_resp.text
+    assert del_resp.status_code == 200, del_resp.text
+    assert del_resp.json().get("success") is True, f"删除未成功：{del_resp.text}"
 
-    # 验证已删除
+    # Verify removed
     list_resp2 = requests.get(
-        f"{BASE}/v1.0/doc/workbooks/{TEST_WORKBOOK_ID}/sheets",
+        f"{BASE_URL}/bases/{base_id}/sheets?operatorId={operator_id}",
         headers=api_headers,
         timeout=15,
     )
-    assert list_resp2.status_code == 200, list_resp2.text
-    sheet_ids2 = [s["sheetId"] for s in list_resp2.json().get("sheets", [])]
-    assert new_sheet_id not in sheet_ids2, f"工作表删除后仍出现在列表中：{sheet_ids2}"
+    ids2 = [s["id"] for s in list_resp2.json().get("value", [])]
+    assert new_id not in ids2, "删除后工作表仍出现在列表中"
