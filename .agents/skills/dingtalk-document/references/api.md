@@ -1,29 +1,34 @@
 # 钉钉文档 API 参考
 
-基础地址：`https://api.dingtalk.com/v1.0`
+基础地址：`https://api.dingtalk.com`
 
 认证请求头：`x-acs-dingtalk-access-token: <accessToken>`
 
+> **重要**：Wiki 相关所有接口均需传 `operatorId`（用户 unionId），缺少则返回 `MissingoperatorId` 错误。
+
 ---
 
-## 知识库（Space）
+## 知识库（Workspace）
 
 ### 查询知识库列表
 ```
-GET /doc/spaces
-Query 参数：maxResults（默认 20）、nextToken（分页）
+GET /v2.0/wiki/workspaces
+Query 参数：operatorId（必填，unionId）、maxResults（默认20）、nextToken（分页）
 ```
 
 返回示例：
 ```json
 {
-  "spaces": [
+  "workspaces": [
     {
-      "spaceId": "xxx",
+      "workspaceId": "QXvd5SLN2AxOQz0Z",
       "name": "团队知识库",
-      "description": "",
-      "createTime": "2024-01-01T00:00:00Z",
-      "modifyTime": "2024-06-01T00:00:00Z"
+      "description": "...",
+      "rootNodeId": "P0MALyR8kl3qpB7qTkM1xn3mW3bzYmDO",
+      "type": "TEAM",
+      "url": "https://alidocs.dingtalk.com/i/spaces/.../overview",
+      "createTime": "2024-01-01T00:00Z",
+      "modifiedTime": "2024-06-01T00:00Z"
     }
   ],
   "nextToken": "..."
@@ -32,31 +37,22 @@ Query 参数：maxResults（默认 20）、nextToken（分页）
 
 ---
 
-### 创建知识库
-```
-POST /doc/spaces
-请求体：{ "name": string（必填）, "description": string（可选）}
-```
-
-返回：`{ "spaceId": "xxx" }`
-
----
-
 ### 查询知识库信息
 ```
-GET /doc/spaces/{spaceId}
+GET /v2.0/wiki/workspaces/{workspaceId}
+Query 参数：operatorId（必填）
 ```
 
-返回：知识库详情对象（同列表中单个 space 结构）
+返回：单个 workspace 对象（同列表结构）
 
 ---
 
 ## 文档节点（Node）
 
-### 查询目录/节点列表
+### 查询节点列表
 ```
-GET /doc/spaces/{spaceId}/nodes
-Query 参数：parentNodeId（可选）、maxResults、nextToken
+GET /v2.0/wiki/nodes
+Query 参数：parentNodeId（必填，传根节点 rootNodeId 可列出顶层内容）、operatorId（必填）、maxResults、nextToken
 ```
 
 返回示例：
@@ -64,38 +60,59 @@ Query 参数：parentNodeId（可选）、maxResults、nextToken
 {
   "nodes": [
     {
-      "nodeId": "xxx",
-      "title": "产品文档",
-      "nodeType": "FOLDER",
-      "url": "https://alidocs.dingtalk.com/...",
-      "createTime": "...",
-      "modifyTime": "..."
+      "nodeId": "LeBq413JAw31yaz1fB0BBdLGWDOnGvpb",
+      "name": "send.sh 钉钉消息发送使用文档.adoc",
+      "type": "FILE",
+      "category": "ALIDOC",
+      "extension": "adoc",
+      "workspaceId": "QXvd5SnBnzmZdZ0Z",
+      "url": "https://alidocs.dingtalk.com/i/nodes/LeBq413JAw31yaz1fB0BBdLGWDOnGvpb",
+      "createTime": "2026-03-04T16:58Z",
+      "modifiedTime": "2026-03-04T17:51Z"
     }
   ],
   "nextToken": "..."
 }
 ```
 
-`nodeType`：`DOC`（文档）| `FOLDER`（文件夹）
+`type`：`FILE`（文档/文件）| `FOLDER`（文件夹）
 
 ---
 
-### 查询单个节点
+### 查询单个节点（通过 nodeId）
 ```
-GET /doc/spaces/{spaceId}/nodes/{nodeId}
+GET /v2.0/wiki/nodes/{nodeId}
+Query 参数：operatorId（必填）
 ```
+
+返回：`{ "node": { nodeId, name, type, category, workspaceId, url, ... } }`
 
 ---
 
-### 创建节点（文档或文件夹）
+### 通过 URL 查询节点
 ```
-POST /doc/spaces/{spaceId}/nodes
+POST /v2.0/wiki/nodes/queryByUrl?operatorId=<unionId>
 请求体：
 {
-  "parentNodeId": string（可选，省略则在根目录），
-  "nodeType": "DOC" | "FOLDER",
+  "url": "https://alidocs.dingtalk.com/i/nodes/<nodeId>",
+  "operatorId": "<unionId>"
+}
+```
+
+返回与 GET 单个节点相同的 node 结构。
+
+---
+
+### 创建文档
+```
+POST /v1.0/doc/workspaces/{workspaceId}/docs
+请求体：
+{
+  "operatorId": "<unionId>"（必填），
+  "docType": "ALIDOC",
   "title": string,
-  "templateType": "BLANK"（nodeType 为 DOC 时）
+  "parentNodeId": string（可选，省略则在根目录），
+  "templateType": "BLANK"
 }
 ```
 
@@ -103,78 +120,67 @@ POST /doc/spaces/{spaceId}/nodes
 
 ---
 
-## 文档正文内容（DocContent）
+## 文档正文内容
 
-> `workbookId` 即节点的 `nodeId`（`nodeType: DOC`）。
+> `docKey` 即节点的 `nodeId`，两者是同一个值。
 
-### 读取文档内容
+### 读取文档 Block 内容
 ```
-GET /doc/workbooks/{workbookId}/docContent
+GET /v1.0/doc/suites/documents/{docKey}/blocks
+Query 参数：operatorId（必填）
+所需权限：Storage.File.Read
 ```
 
 返回示例：
 ```json
 {
-  "docContent": "# 标题\n\n正文内容...",
-  "contentType": "MARKDOWN"
+  "result": {
+    "data": [
+      { "blockType": "heading", "heading": { "level": "heading-2", "text": "快速开始" }, "index": 0, "id": "mmbtk3u2nsn5gclyyu" },
+      { "blockType": "paragraph", "paragraph": { "text": "每次发送前脚本会显示确认框..." }, "index": 1, "id": "mmbtk3u3vv0xa7jo5mf" },
+      { "blockType": "table", "table": { "colSize": 2, "rowSize": 10 }, "index": 2, "id": "xxx" },
+      { "blockType": "unknown", "index": 3, "id": "yyy", "unknown": {} }
+    ]
+  },
+  "success": true
 }
 ```
 
-`contentType` 固定为 `MARKDOWN`，`docContent` 为完整的 Markdown 文本。
+`blockType` 枚举：`heading`、`paragraph`、`unorderedList`、`orderedList`、`table`、`blockquote`、`unknown`（代码块/图片等）
 
 ---
 
-### 写入/覆盖文档内容
+### 覆盖写入文档内容
 ```
-PUT /doc/workbooks/{workbookId}/docContent
+POST /v1.0/doc/suites/documents/{docKey}/overwriteContent
 请求体：
 {
-  "docContent": string（Markdown 格式正文，必填），
-  "contentType": "MARKDOWN"
+  "operatorId": "<unionId>"（必填），
+  "docContent": string（Markdown 格式正文），
+  "contentType": "markdown"
 }
 ```
 
 ⚠️ 此操作**全量覆盖**文档内容，不可撤销。
 
-返回：`200 OK`（无响应体）
+---
+
+### 追加文本到段落
+```
+POST /v1.0/doc/suites/documents/{docKey}/blocks/{blockId}/paragraph/appendText
+请求体：{ "operatorId": "<unionId>", "text": "追加的文字" }
+```
 
 ---
 
-## 成员权限
+## 成员管理
 
-### 添加知识库成员
+### 添加文档成员
 ```
-POST /doc/spaces/{spaceId}/members
+POST /v1.0/doc/workspaces/{workspaceId}/docs/{nodeId}/members
 请求体：
 {
-  "members": [
-    { "id": "<userId>", "roleType": "viewer" | "editor" | "admin" }
-  ]
-}
-```
-
----
-
-### 更新知识库成员权限
-```
-PUT /doc/spaces/{spaceId}/members/{memberId}
-请求体：{ "roleType": "viewer" | "editor" | "admin" }
-```
-
----
-
-### 移除知识库成员
-```
-DELETE /doc/spaces/{spaceId}/members/{memberId}
-```
-
----
-
-### 添加文档节点成员
-```
-POST /doc/spaces/{spaceId}/nodes/{nodeId}/members
-请求体：
-{
+  "operatorId": "<unionId>",
   "members": [
     { "id": "<userId>", "roleType": "viewer" | "editor" }
   ]
@@ -183,36 +189,39 @@ POST /doc/spaces/{spaceId}/nodes/{nodeId}/members
 
 ---
 
-### 更新文档节点成员权限
+### 更新文档成员权限
 ```
-PUT /doc/spaces/{spaceId}/nodes/{nodeId}/members/{memberId}
-请求体：{ "roleType": "viewer" | "editor" }
+PUT /v1.0/doc/workspaces/{workspaceId}/docs/{nodeId}/members/{memberId}
+请求体：{ "operatorId": "<unionId>", "roleType": "viewer" | "editor" }
 ```
 
 ---
 
-### 移除文档节点成员
+### 移除文档成员
 ```
-DELETE /doc/spaces/{spaceId}/nodes/{nodeId}/members/{memberId}
+DELETE /v1.0/doc/workspaces/{workspaceId}/docs/{nodeId}/members/{memberId}
+Query 参数：operatorId（必填）
 ```
 
 ---
 
 ## 常见错误码
 
-| 错误码 | 说明 |
-|---|---|
-| `Forbidden.AccessDenied` | 应用缺少权限或用户未授权 |
-| `InvalidParameter` | 请求字段缺失或格式不正确 |
-| `NotFound.Space` | spaceId 不存在 |
-| `NotFound.Node` | nodeId 不存在 |
-| `LimitExceeded.Qps` | 触发 QPS 限流，1 秒后重试 |
+| HTTP | 错误码 | 说明 | 处理 |
+|---|---|---|---|
+| 400 | `MissingoperatorId` | operatorId 未传 | 补充 operatorId（unionId）|
+| 400 | `paramError` | 参数类型错误 | operatorId 必须是 unionId，非 userId |
+| 403 | `Forbidden.AccessDenied.AccessTokenPermissionDenied` | 应用缺少权限 | 错误中有 `requiredScopes`，开通对应权限 |
+| 404 | `InvalidAction.NotFound` | 接口路径不存在 | 检查版本号和路径 |
+| 429 | — | QPS 限流 | 1 秒后重试 |
 
 ---
 
 ## 所需应用权限
 
-在钉钉开放平台 → 应用 → 权限管理中开通：
-- 读取文档内容（docContent 读取必须）
-- 写入文档内容（docContent 写入必须）
-- 管理知识库
+| 功能 | 权限 scope |
+|---|---|
+| 查询知识库/节点 | `Wiki.Node.Read` |
+| 读取文档正文（blocks）| `Storage.File.Read` |
+| 写入文档正文 | `Storage.File.Write` |
+| 查询用户 unionId | `Contact.User.Read` |

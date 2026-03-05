@@ -39,6 +39,16 @@ x-acs-dingtalk-access-token: <accessToken>
 
 ---
 
+## operatorId 说明
+
+Wiki（知识库）相关的所有接口都**强制要求** `operatorId` 参数，值为操作人的 `unionId`（不是 `userId`）。
+
+获取 unionId：调用 `POST https://oapi.dingtalk.com/topapi/v2/user/get?access_token=<token>`，响应中 `result.unionid` 字段即为所需值。
+
+> 专属钉钉组织：使用 `unionid`（无下划线）字段，`union_id`（有下划线）字段可能为 None。
+
+---
+
 ## 核心操作
 
 ### 1. 查询用户知识库列表
@@ -46,122 +56,134 @@ x-acs-dingtalk-access-token: <accessToken>
 用户想查看有哪些知识库时：
 
 ```
-GET https://api.dingtalk.com/v1.0/doc/spaces?maxResults=20&nextToken=<分页令牌>
+GET https://api.dingtalk.com/v2.0/wiki/workspaces?operatorId=<unionId>&maxResults=20&nextToken=<分页令牌>
 x-acs-dingtalk-access-token: <accessToken>
 ```
 
-如有 `nextToken` 则继续翻页，直到无 `nextToken` 为止。
+如有 `nextToken` 则继续翻页，直到无 `nextToken` 为止。返回字段中 `workspaceId` 和 `rootNodeId` 供后续操作使用。
 
 ---
 
-### 2. 创建知识库
+### 2. 查询知识库信息
 
 ```
-POST https://api.dingtalk.com/v1.0/doc/spaces
-x-acs-dingtalk-access-token: <accessToken>
-Content-Type: application/json
-
-{
-  "name": "<知识库名称>",
-  "description": "<描述（可选）>"
-}
-```
-
-返回 `spaceId`，后续操作需要保存此值。
-
----
-
-### 3. 查询知识库信息
-
-```
-GET https://api.dingtalk.com/v1.0/doc/spaces/{spaceId}
+GET https://api.dingtalk.com/v2.0/wiki/workspaces/{workspaceId}?operatorId=<unionId>
 x-acs-dingtalk-access-token: <accessToken>
 ```
 
 ---
 
-### 4. 查询目录结构
+### 3. 查询目录结构（节点列表）
 
 用户想看知识库里有哪些文档/文件夹时：
 
 ```
-GET https://api.dingtalk.com/v1.0/doc/spaces/{spaceId}/nodes?maxResults=50&nextToken=<令牌>
+GET https://api.dingtalk.com/v2.0/wiki/nodes?parentNodeId=<nodeId>&operatorId=<unionId>&maxResults=50
 x-acs-dingtalk-access-token: <accessToken>
 ```
 
-查询指定文件夹的子节点，追加 `?parentNodeId=<nodeId>`。
+`parentNodeId` 传知识库的 `rootNodeId` 可列出顶层内容，传子文件夹 `nodeId` 可深入查看。
 
-每个节点包含：`nodeId`、`title`、`nodeType`（`DOC`/`FOLDER`）、`url`。
+每个节点包含：`nodeId`、`name`、`type`（`FILE`/`FOLDER`）、`category`、`workspaceId`、`url`。
 
 ---
 
-### 5. 查询单个节点信息
+### 4. 查询单个节点信息（通过 nodeId）
 
 ```
-GET https://api.dingtalk.com/v1.0/doc/spaces/{spaceId}/nodes/{nodeId}
+GET https://api.dingtalk.com/v2.0/wiki/nodes/{nodeId}?operatorId=<unionId>
 x-acs-dingtalk-access-token: <accessToken>
 ```
 
 ---
 
-### 6. 创建文档或文件夹
+### 5. 通过文档链接查询节点信息
+
+用户提供了文档 URL（如 `https://alidocs.dingtalk.com/i/nodes/Xxx...`）时：
 
 ```
-POST https://api.dingtalk.com/v1.0/doc/spaces/{spaceId}/nodes
+POST https://api.dingtalk.com/v2.0/wiki/nodes/queryByUrl?operatorId=<unionId>
 x-acs-dingtalk-access-token: <accessToken>
 Content-Type: application/json
 
 {
-  "parentNodeId": "<父节点 ID，根目录可省略>",
-  "nodeType": "DOC",
-  "title": "<文档标题>",
-  "templateType": "BLANK"
+  "url": "https://alidocs.dingtalk.com/i/nodes/<nodeId>",
+  "operatorId": "<unionId>"
 }
 ```
 
-`nodeType` 可选值：
-- `DOC`：普通文档
-- `FOLDER`：文件夹
+返回节点信息，其中 `nodeId` 可作为后续内容读取的 `docKey`。
+
+---
+
+### 6. 创建文档
+
+在指定知识库下新建文档：
+
+```
+POST https://api.dingtalk.com/v1.0/doc/workspaces/{workspaceId}/docs
+x-acs-dingtalk-access-token: <accessToken>
+Content-Type: application/json
+
+{
+  "operatorId": "<unionId>",
+  "docType": "ALIDOC",
+  "title": "<文档标题>",
+  "parentNodeId": "<父节点 ID，可选>",
+  "templateType": "BLANK"
+}
+```
 
 返回 `nodeId` 和 `url`（文档链接）。
 
 ---
 
-### 7. 读取文档正文内容
+### 7. 读取文档正文内容（Block 结构）
 
-用户想看文档里写了什么内容时，使用 `workbookId`（即节点的 `nodeId`）读取正文：
+用户想看文档里写了什么内容时，使用 `docKey`（即节点的 `nodeId`）读取文档 Block：
 
 ```
-GET https://api.dingtalk.com/v1.0/doc/workbooks/{workbookId}/docContent
+GET https://api.dingtalk.com/v1.0/doc/suites/documents/{docKey}/blocks?operatorId=<unionId>
 x-acs-dingtalk-access-token: <accessToken>
 ```
+
+所需权限：`Storage.File.Read`
 
 返回示例：
 ```json
 {
-  "docContent": "# 文档标题\n\n正文第一段...\n\n## 小节",
-  "contentType": "MARKDOWN"
+  "result": {
+    "data": [
+      { "blockType": "heading", "heading": { "level": "heading-2", "text": "快速开始" }, "index": 0, "id": "xxx" },
+      { "blockType": "paragraph", "paragraph": { "text": "正文内容..." }, "index": 1, "id": "yyy" },
+      { "blockType": "unknown", "index": 2, "id": "zzz" }
+    ]
+  },
+  "success": true
 }
 ```
 
-返回的 `docContent` 为 Markdown 格式，可直接展示或进一步处理。
+`blockType` 枚举：`heading`、`paragraph`、`unorderedList`、`orderedList`、`table`、`blockquote`、`unknown`（代码块/图片等富文本暂未解析）。
 
-> `workbookId` 即创建/查询节点时返回的 `nodeId`（`nodeType: DOC`）。
+将各 block 的文本提取后按 index 顺序拼接，即可重建文档文字内容。
+
+> `docKey` 即通过 wiki nodes 接口获取的 `nodeId`，是同一个值。
 
 ---
 
-### 8. 写入/更新文档正文内容
+### 8. 写入/覆盖文档正文内容
 
 用户想修改文档内容时：
 
 ```
-PUT https://api.dingtalk.com/v1.0/doc/workbooks/{workbookId}/docContent
+POST https://api.dingtalk.com/v1.0/doc/suites/documents/{docKey}/overwriteContent
 x-acs-dingtalk-access-token: <accessToken>
 Content-Type: application/json
 
 {
+  "operatorId": "<unionId>",
   "docContent": "# 新标题\n\n新的正文内容，支持 Markdown 格式。",
-  "contentType": "MARKDOWN"
+  "contentType": "markdown"
 }
 ```
 
@@ -169,70 +191,74 @@ Content-Type: application/json
 
 ---
 
-### 9. 知识库成员管理
+### 9. 文档成员管理
 
-**添加成员：**
+**添加文档成员：**
 ```
-POST https://api.dingtalk.com/v1.0/doc/spaces/{spaceId}/members
+POST https://api.dingtalk.com/v1.0/doc/workspaces/{workspaceId}/docs/{nodeId}/members
+x-acs-dingtalk-access-token: <accessToken>
 Content-Type: application/json
 
 {
+  "operatorId": "<unionId>",
   "members": [
     { "id": "<userId>", "roleType": "editor" }
   ]
 }
 ```
 
-`roleType` 可选：`viewer`（可见）、`editor`（可编辑）、`admin`（管理员）
-
-**更新成员权限：**
-```
-PUT https://api.dingtalk.com/v1.0/doc/spaces/{spaceId}/members/{memberId}
-{ "roleType": "viewer" }
-```
-
-**移除成员：**
-```
-DELETE https://api.dingtalk.com/v1.0/doc/spaces/{spaceId}/members/{memberId}
-```
+`roleType` 可选：`viewer`（只读）、`editor`（可编辑）
 
 ---
 
 ## 典型场景
 
 ### "读取文档 X 的内容"
-1. 通过节点列表找到目标文档的 `nodeId`（即 `workbookId`）
-2. 调用 `GET /doc/workbooks/{workbookId}/docContent`
-3. 将 Markdown 内容整理后展示给用户
+1. 若用户提供了 URL，调用 `POST /v2.0/wiki/nodes/queryByUrl` 获取 `nodeId`
+2. 否则通过 `GET /v2.0/wiki/nodes?parentNodeId=...` 遍历查找目标文档
+3. 用 `nodeId` 作为 `docKey`，调用 `GET /v1.0/doc/suites/documents/{docKey}/blocks`
+4. 将 block 文本按 index 顺序拼接后展示给用户
 
 ### "把文档 X 的内容改成……"
 1. 先读取原内容，告知用户将被覆盖，请求确认
-2. 调用 `PUT /doc/workbooks/{workbookId}/docContent`，传入新内容
+2. 调用 `POST /v1.0/doc/suites/documents/{docKey}/overwriteContent`，传入新内容
 3. 告知写入成功
 
 ### "帮我在钉钉创建一个文档"
 1. 询问放到哪个知识库（列出知识库或让用户说名称）
-2. 调用 `POST /doc/spaces/{spaceId}/nodes`，`nodeType: DOC`
-3. 返回文档链接给用户
+2. 通过 `GET /v2.0/wiki/workspaces` 找到对应 `workspaceId`
+3. 调用 `POST /v1.0/doc/workspaces/{workspaceId}/docs`，`docType: ALIDOC`
+4. 返回文档链接给用户
 
 ### "查看知识库 X 下有哪些文档"
-1. 通过列表查到对应 `spaceId`
-2. 调用 `GET /doc/spaces/{spaceId}/nodes`
+1. 通过 `GET /v2.0/wiki/workspaces` 找到 `workspaceId` 和 `rootNodeId`
+2. 调用 `GET /v2.0/wiki/nodes?parentNodeId={rootNodeId}&operatorId=...`
 3. 整理成目录树展示
 
-### "把用户 xxx 加到知识库 Y"
-1. 确认知识库的 `spaceId`
-2. 调用 `POST /doc/spaces/{spaceId}/members`，指定 `roleType`
+### "把用户 xxx 加到文档 Y"
+1. 确认文档的 `nodeId` 和所在 `workspaceId`
+2. 调用 `POST /v1.0/doc/workspaces/{workspaceId}/docs/{nodeId}/members`，指定 `roleType`
 
 ---
 
 ## 错误处理
 
-| HTTP 状态码 | 含义 | 处理方式 |
-|---|---|---|
-| 401 | token 过期 | 重新获取 accessToken 后重试 |
-| 403 | 权限不足 | 提示用户检查应用权限配置（需开通"读取/写入文档内容"权限）|
-| 404 | 知识库或节点不存在 | 请用户确认 ID 是否正确；写 docContent 时确认 nodeId 对应的节点类型为 DOC |
-| 429 | 触发限流 | 等待 1 秒后重试 |
+| HTTP 状态码 | 错误码 | 含义 | 处理方式 |
+|---|---|---|---|
+| 400 | `MissingoperatorId` | operatorId 未传 | 补充 operatorId（unionId）|
+| 400 | `paramError` | 参数类型错误 | operatorId 必须是 unionId，不是 userId |
+| 401 | — | token 过期 | 重新获取 accessToken 后重试 |
+| 403 | `Forbidden.AccessDenied.AccessTokenPermissionDenied` | 应用缺少权限 | 错误信息中有 `requiredScopes`，提示用户在开放平台开通对应权限 |
+| 404 | `InvalidAction.NotFound` | 接口路径不存在 | 检查版本号（v1.0/v2.0）和路径是否正确 |
+| 429 | — | 触发限流 | 等待 1 秒后重试 |
 
 发生错误时，将响应体中的 `code` 和 `message` 展示给用户辅助排查。
+
+## 所需应用权限
+
+| 功能 | 权限 scope |
+|---|---|
+| 查询知识库/节点 | `Wiki.Node.Read` |
+| 读取文档正文 | `Storage.File.Read` |
+| 写入文档正文 | `Storage.File.Write` |
+| 查询用户 unionId（获取 operatorId）| `Contact.User.Read` |
