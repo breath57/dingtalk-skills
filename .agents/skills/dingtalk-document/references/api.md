@@ -109,20 +109,36 @@ POST /v1.0/doc/workspaces/{workspaceId}/docs
 请求体：
 {
   "operatorId": "<unionId>"（必填），
-  "docType": "ALIDOC",
-  "title": string,
-  "parentNodeId": string（可选，省略则在根目录），
-  "templateType": "BLANK"
+  "docType": "DOC"（固定值，ALIDOC 富文本格式），
+  "name": string（文档标题，必填）
 }
 ```
 
-返回：`{ "nodeId": "xxx", "url": "https://..." }`
+返回：
+```json
+{
+  "nodeId": "xxx",    // 知识库节点 ID（用于删除）
+  "docKey": "yyy",   // 文档内容 Key（用于内容读写，≠ nodeId）
+  "workspaceId": "zzz",  // 实际所在知识库（可能与请求不同，删除须使用此值）
+  "url": "https://..."
+}
+```
+
+### 删除文档
+```
+DELETE /v1.0/doc/workspaces/{workspaceId}/docs/{nodeId}
+Query 参数：operatorId（必填）
+```
+
+`workspaceId` 和 `nodeId` 均使用创建文档响应中的值。成功返回 `200 {}`。
 
 ---
 
 ## 文档正文内容
 
-> `docKey` 即节点的 `nodeId`，两者是同一个值。
+> 读取/写入内容时使用 `docKey`（来自创建文档响应或 wiki nodes 响应的 `nodeId`）。
+> 注意：通过 wiki nodes API 获取的节点，其 `nodeId` 即为 `docKey`；
+> 通过创建文档 API 新建的文档，`docKey` 与 `nodeId` **是不同的值**，须使用响应中的 `docKey`。
 
 ### 读取文档 Block 内容
 ```

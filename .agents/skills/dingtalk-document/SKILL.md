@@ -127,25 +127,47 @@ Content-Type: application/json
 
 {
   "operatorId": "<unionId>",
-  "docType": "ALIDOC",
-  "title": "<文档标题>",
-  "parentNodeId": "<父节点 ID，可选>",
-  "templateType": "BLANK"
+  "docType": "DOC",
+  "name": "<文档标题>"
 }
 ```
 
-返回 `nodeId` 和 `url`（文档链接）。
+返回字段：
+
+| 字段 | 说明 |
+|---|---|
+| `nodeId` | 知识库节点 ID（用于删除） |
+| `docKey` | 文档内容 Key（用于内容读写，≠ nodeId） |
+| `workspaceId` | 实际所在知识库 ID（可能与请求的不同，删除时须使用此值） |
+| `url` | 文档访问链接 |
+
+> `docType` 固定填 `"DOC"`（ALIDOC 富文本格式）。
+
+---
+
+### 10. 删除文档
+
+```
+DELETE https://api.dingtalk.com/v1.0/doc/workspaces/{workspaceId}/docs/{nodeId}?operatorId=<unionId>
+x-acs-dingtalk-access-token: <accessToken>
+```
+
+`workspaceId` 和 `nodeId` 均从创建文档的响应中获取。成功返回 `200 {}`。
 
 ---
 
 ### 7. 读取文档正文内容（Block 结构）
 
-用户想看文档里写了什么内容时，使用 `docKey`（即节点的 `nodeId`）读取文档 Block：
+用户想看文档里写了什么内容时，使用 `docKey` 读取文档 Block：
 
 ```
 GET https://api.dingtalk.com/v1.0/doc/suites/documents/{docKey}/blocks?operatorId=<unionId>
 x-acs-dingtalk-access-token: <accessToken>
 ```
+
+`docKey` 的来源：
+- 通过 wiki nodes 接口查到的节点：`docKey = nodeId`（同一个值）
+- 通过创建文档接口新建的文档：使用响应中的 `docKey` 字段（**不是** `nodeId`）
 
 所需权限：`Storage.File.Read`
 
@@ -261,4 +283,5 @@ Content-Type: application/json
 | 查询知识库/节点 | `Wiki.Node.Read` |
 | 读取文档正文 | `Storage.File.Read` |
 | 写入文档正文 | `Storage.File.Write` |
+| 创建/删除文档 | `Storage.File.Write` |
 | 查询用户 unionId（获取 operatorId）| `Contact.User.Read` |
