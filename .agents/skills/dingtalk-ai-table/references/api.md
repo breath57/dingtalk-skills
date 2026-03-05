@@ -1,8 +1,15 @@
 # 钉钉 AI 表格 API 参考
 
-基础地址：`https://api.dingtalk.com/v1.0`
+> **重要：** 钉钉 AI 表格（`.able` 文件）使用 **Notable API**，  
+> 路径前缀为 `/v1.0/notable`，与普通电子表格 API（`/v1.0/doc/workbooks`）完全不同。
 
-认证请求头：`x-acs-dingtalk-access-token: <accessToken>`
+基础地址：`https://api.dingtalk.com/v1.0/notable`
+
+认证：
+- 请求头：`x-acs-dingtalk-access-token: <accessToken>`
+- 所有接口均需查询参数：`operatorId=<用户 unionId>`
+
+`{base_id}` = AI 表格文件的 **nodeId**（从分享链接 `/nodes/<nodeId>` 提取）
 
 ---
 
@@ -10,15 +17,15 @@
 
 ### 查询所有工作表
 ```
-GET /doc/workbooks/{workbookId}/sheets
+GET /notable/bases/{base_id}/sheets?operatorId={operatorId}
 ```
 
 返回示例：
 ```json
 {
-  "sheets": [
-    { "sheetId": "sheet1", "name": "Sheet1", "index": 0 },
-    { "sheetId": "sheet2", "name": "汇总", "index": 1 }
+  "value": [
+    { "id": "HAcL4SD", "name": "项目" },
+    { "id": "nr2iEiW", "name": "任务" }
   ]
 }
 ```
@@ -27,205 +34,213 @@ GET /doc/workbooks/{workbookId}/sheets
 
 ### 查询单个工作表
 ```
-GET /doc/workbooks/{workbookId}/sheets/{sheetId}
+GET /notable/bases/{base_id}/sheets/{sheet_id}?operatorId={operatorId}
 ```
 
 返回示例：
 ```json
-{
-  "sheetId": "sheet1",
-  "name": "Sheet1",
-  "index": 0,
-  "rowCount": 1000,
-  "columnCount": 26
-}
+{ "id": "HAcL4SD", "name": "项目" }
 ```
 
 ---
 
 ### 创建工作表
 ```
-POST /doc/workbooks/{workbookId}/sheets
-请求体：
+POST /notable/bases/{base_id}/sheets?operatorId={operatorId}
+Content-Type: application/json
+
 {
-  "name": string（必填），
-  "index": int（可选，0 开始，默认追加末尾）
+  "name": "新工作表",
+  "fields": [
+    { "name": "标题", "type": "text" },
+    { "name": "数量", "type": "number" }
+  ]
 }
 ```
 
-返回：`{ "sheetId": "xxx", "name": "新工作表", "index": 2 }`
+`fields` 为可选，省略则创建空工作表。  
+返回：`{ "id": "zHTWNlh", "name": "新工作表" }`
 
 ---
 
 ### 删除工作表
 ```
-DELETE /doc/workbooks/{workbookId}/sheets/{sheetId}
+DELETE /notable/bases/{base_id}/sheets/{sheet_id}?operatorId={operatorId}
 ```
 
-返回：`204 No Content`
+返回：`{ "success": true }`
 
 ---
 
-## 行列操作
+## 字段（Field）
 
-### 插入行（在指定行上方）
+### 查询所有字段
 ```
-POST /doc/workbooks/{workbookId}/sheets/{sheetId}/insertRows
-请求体：
-{
-  "row": int,       // 0 开始，在此行上方插入
-  "rowCount": int   // 插入行数
-}
-```
-
----
-
-### 删除行
-```
-DELETE /doc/workbooks/{workbookId}/sheets/{sheetId}/rows/{row}
-请求体：
-{
-  "rowCount": int   // 从 row 起删除的行数
-}
-```
-
----
-
-### 设置行显示/隐藏
-```
-PUT /doc/workbooks/{workbookId}/sheets/{sheetId}/rows/{row}/visibility
-请求体：
-{
-  "hidden": bool,
-  "count": int（默认 1）
-}
-```
-
----
-
-### 插入列（在指定列左侧）
-```
-POST /doc/workbooks/{workbookId}/sheets/{sheetId}/insertColumns
-请求体：
-{
-  "column": int,      // 0 开始，在此列左侧插入
-  "columnCount": int
-}
-```
-
----
-
-### 删除列
-```
-DELETE /doc/workbooks/{workbookId}/sheets/{sheetId}/columns/{column}
-请求体：
-{
-  "columnCount": int
-}
-```
-
----
-
-### 设置列显示/隐藏
-```
-PUT /doc/workbooks/{workbookId}/sheets/{sheetId}/columns/{column}/visibility
-请求体：
-{
-  "hidden": bool,
-  "count": int（默认 1）
-}
-```
-
----
-
-## 单元格区域（Range）
-
-区域地址格式：标准 A1 表示法，如 `A1:C10`
-
-### 读取区域值
-```
-GET /doc/workbooks/{workbookId}/sheets/{sheetId}/ranges/{区域地址}
+GET /notable/bases/{base_id}/sheets/{sheet_id}/fields?operatorId={operatorId}
 ```
 
 返回示例：
 ```json
 {
-  "rangeAddress": "A1:C3",
-  "values": [
-    ["姓名", "分数", "日期"],
-    ["张三", 95, "2026-01-01"],
-    ["李四", 87, "2026-01-02"]
-  ],
-  "formulas": [
-    ["", "", ""],
-    ["", "=SUM(B2:B10)", ""]
+  "value": [
+    { "id": "6mNRNHb", "name": "标题", "type": "text" },
+    { "id": "BDGLCo2", "name": "截止日期", "type": "date", "property": { "formatter": "YYYY-MM-DD" } },
+    { "id": "mr8APlG", "name": "数量", "type": "number", "property": { "formatter": "INT" } }
   ]
 }
 ```
 
-`values`：单元格显示值（公式已计算）
-`formulas`：原始公式字符串（无公式时为空字符串）
-
 ---
 
-### 写入区域值
+### 创建字段
 ```
-PUT /doc/workbooks/{workbookId}/sheets/{sheetId}/ranges/{区域地址}
-请求体：
+POST /notable/bases/{base_id}/sheets/{sheet_id}/fields?operatorId={operatorId}
+Content-Type: application/json
+
 {
-  "values": [
-    ["值1", "值2", "值3"],
-    ["值4", "值5", "值6"]
+  "name": "字段名称",
+  "type": "number"
+}
+```
+
+常用 `type` 值：`text`、`number`、`date`  
+返回示例：
+```json
+{
+  "id": "mr8APlG",
+  "name": "字段名称",
+  "type": "number",
+  "property": { "formatter": "INT" }
+}
+```
+
+---
+
+### 更新字段
+```
+PUT /notable/bases/{base_id}/sheets/{sheet_id}/fields/{field_id}?operatorId={operatorId}
+Content-Type: application/json
+
+{ "name": "新字段名称" }
+```
+
+返回：`{ "id": "fieldId" }`（仅返回 id，通过 GET /fields 确认名称变更）
+
+---
+
+### 删除字段
+```
+DELETE /notable/bases/{base_id}/sheets/{sheet_id}/fields/{field_id}?operatorId={operatorId}
+```
+
+返回：`{ "success": true }`
+
+---
+
+## 记录（Record）
+
+### 新增记录
+```
+POST /notable/bases/{base_id}/sheets/{sheet_id}/records?operatorId={operatorId}
+Content-Type: application/json
+
+{
+  "records": [
+    { "fields": { "标题": "任务一", "数量": 3 } },
+    { "fields": { "标题": "任务二", "数量": 5 } }
   ]
 }
 ```
 
-`values` 的行列数必须与区域地址维度一致。
-写入公式以 `=` 开头，如 `"=SUM(A1:A10)"`。
-
----
-
-### 清除区域数据（保留格式）
-```
-DELETE /doc/workbooks/{workbookId}/sheets/{sheetId}/ranges/{区域地址}/values
-```
-
----
-
-### 清除区域全部内容（含格式）
-```
-DELETE /doc/workbooks/{workbookId}/sheets/{sheetId}/ranges/{区域地址}/contents
+`fields` 中使用**字段名称**（非 ID）作为键。  
+返回示例：
+```json
+{
+  "value": [
+    { "id": "RNXU1Vm2L2" },
+    { "id": "LK0kdIxCQU" }
+  ]
+}
 ```
 
 ---
 
-## 列索引参考
+### 查询记录列表
+```
+POST /notable/bases/{base_id}/sheets/{sheet_id}/records/list?operatorId={operatorId}
+Content-Type: application/json
 
-| 列索引（0 开始）| 列字母 |
-|---|---|
-| 0 | A |
-| 1 | B |
-| 25 | Z |
-| 26 | AA |
+{
+  "maxResults": 20,
+  "nextToken": ""
+}
+```
+
+返回示例：
+```json
+{
+  "records": [
+    {
+      "id": "RNXU1Vm2L2",
+      "fields": { "标题": "任务一", "数量": 3 },
+      "createdTime": 1772723541439,
+      "createdBy": { "unionId": "K1mxiiGFgkVfWYR5tNM04lAiEiE" },
+      "lastModifiedTime": 1772723541439,
+      "lastModifiedBy": { "unionId": "K1mxiiGFgkVfWYR5tNM04lAiEiE" }
+    }
+  ],
+  "hasMore": false,
+  "nextToken": ""
+}
+```
+
+翻页：当 `hasMore=true` 时，将 `nextToken` 传入下次请求继续获取。
 
 ---
 
-## 常见错误码
+### 更新记录
+```
+PUT /notable/bases/{base_id}/sheets/{sheet_id}/records?operatorId={operatorId}
+Content-Type: application/json
 
-| 错误码 | 说明 |
-|---|---|
-| `InvalidParameter.RangeAddress` | 区域地址格式不正确 |
-| `InvalidParameter.Values` | values 数组维度与区域不匹配 |
-| `NotFound.Workbook` | workbookId 不存在 |
-| `NotFound.Sheet` | sheetId 不存在 |
-| `Forbidden.AccessDenied` | 应用缺少权限或未授权 |
-| `LimitExceeded.Qps` | 触发限流，1 秒后重试 |
+{
+  "records": [
+    { "id": "RNXU1Vm2L2", "fields": { "标题": "新标题" } }
+  ]
+}
+```
+
+只传需要修改的字段，未传字段保持不变。  
+返回：`{ "value": [{ "id": "RNXU1Vm2L2" }] }`
+
+---
+
+### 删除记录
+```
+POST /notable/bases/{base_id}/sheets/{sheet_id}/records/delete?operatorId={operatorId}
+Content-Type: application/json
+
+{ "recordIds": ["RNXU1Vm2L2", "LK0kdIxCQU"] }
+```
+
+返回：`{ "success": true }`
+
+---
+
+## 错误码
+
+| code | 说明 | 处理建议 |
+|---|---|---|
+| `invalidRequest.document.notFound` | base_id 无效或无访问权限 | 确认 AI 表格 nodeId 正确，且 operatorId 对应用户有权限 |
+| `Forbidden.AccessDenied` | 应用未开通所需权限 | 在开发者后台开通 Notable 相关权限 |
+| `InvalidParameter` | 请求参数格式有误 | 检查 fields key 是字段名称而非 ID |
+| `429 TooManyRequests` | 触发限流 | 等待 1s 后重试 |
 
 ---
 
 ## 所需应用权限
 
-在钉钉开放平台 → 应用 → 权限管理中开通：
-- 读取表格内容
-- 写入表格内容
-- 管理表格
+| 权限名称 | 说明 |
+|---|---|
+| `Document.Notable.Read` | 读取 AI 表格数据 |
+| `Document.Notable.Write` | 写入 / 修改 AI 表格数据 |
