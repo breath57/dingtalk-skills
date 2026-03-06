@@ -12,24 +12,56 @@
 
 ### ✅ 已上线
 
-| 技能 | 功能描述 | 安装命令 |
-|---|---|---|
-| [dingtalk-document](.agents/skills/dingtalk-document/) | 钉钉知识库 & 文档管理 — 创建/查询知识库、新建文档、管理成员权限 | `npx skills add breath57/dingtalk-skills@dingtalk-document` |
-| [dingtalk-ai-table](.agents/skills/dingtalk-ai-table/) | 钉钉 AI 表格 — 读写单元格数据、管理工作表、插入/删除行列 | `npx skills add breath57/dingtalk-skills@dingtalk-ai-table` |
+#### [dingtalk-document](.agents/skills/dingtalk-document/) — 钉钉知识库 & 文档
+
+```bash
+npx skills add breath57/dingtalk-skills@dingtalk-document
+```
+
+| 能力 | 说明 |
+|---|---|
+| 查询知识库列表 | 获取当前用户有权访问的全部知识库 |
+| 查询知识库信息 | 按 workspaceId 获取知识库详情 |
+| 浏览目录结构 | 列出知识库下的文档/文件夹节点树 |
+| 查询节点信息 | 按 nodeId 或文档链接获取节点详情 |
+| 创建文档/文件夹 | 在指定知识库/目录下新建文档或文件夹 |
+| 读取文档内容 | 获取文档正文的 Block 结构（含标题、段落、列表、表格等） |
+| 写入/覆盖文档内容 | 用 Block 结构替换文档正文 |
+| 删除文档 | 从知识库中删除指定文档 |
+| 成员权限管理 | 添加/移除文档协作成员及权限级别 |
+
+#### [dingtalk-ai-table](.agents/skills/dingtalk-ai-table/) — 钉钉 AI 表格
+
+```bash
+npx skills add breath57/dingtalk-skills@dingtalk-ai-table
+```
+
+| 能力 | 说明 |
+|---|---|
+| 列出工作表 | 获取 AI 表格内所有工作表 |
+| 查询/新建/删除工作表 | 管理 AI 表格内的工作表 |
+| 列出字段 | 获取工作表全部字段及类型（text / number / date 等） |
+| 新建/更新/删除字段 | 管理列定义 |
+| 新增记录 | 批量向工作表插入数据行 |
+| 查询记录列表 | 分页读取所有记录，支持翻页 |
+| 更新记录 | 按 recordId 修改指定字段值 |
+| 删除记录 | 按 recordId 批量删除数据行 |
 
 ### 🗓️ 计划中
 
-| 技能 | 功能描述 |
-|---|---|
-| `dingtalk-auth` | 获取企业内部应用 access_token |
-| `dingtalk-message` | 发送工作通知 / 机器人消息 / 互动卡片 |
-| `dingtalk-contacts` | 查询用户、部门、角色信息 |
-| `dingtalk-approval` | OA 审批发起、查询、处理 |
-| `dingtalk-calendar` | 日程创建、查询、忙闲查询 |
-| `dingtalk-todo` | 待办任务创建与管理 |
-| `dingtalk-attendance` | 考勤打卡结果、排班、假期余额 |
-| `dingtalk-meeting` | 创建 / 查询视频会议 |
-| `dingtalk-ai-agent` | 钉钉 AI 助理消息发送与更新 |
+`dingtalk-auth` · `dingtalk-message` · `dingtalk-contacts` · `dingtalk-approval` · `dingtalk-calendar` · `dingtalk-todo` · `dingtalk-attendance` · `dingtalk-meeting` · `dingtalk-ai-agent`
+
+## 配置管理
+
+所有技能共享统一的配置文件 `~/.dingtalk-skills/config`（纯键值对格式）：
+
+```
+DINGTALK_APP_KEY=dingXXXXXX
+DINGTALK_APP_SECRET=XXXXXX
+DINGTALK_OPERATOR_ID=XXXXXX
+```
+
+**首次使用时**，Agent 会检查配置文件，若缺少所需配置项，则一次性询问用户并自动写入，后续无需重复提供。不同技能各自读取自己需要的键，通用配置（appKey、appSecret、operatorId）只需填写一次对所有技能生效。
 
 ## 前置条件
 
@@ -48,7 +80,8 @@ npx skills add breath57/dingtalk-skills@dingtalk-ai-table
 
 安装后直接对 AI Agent 说话即可，例如：
 - "帮我在钉钉知识库里新建一个文档"
-- "读取这个钉钉表格 A1:C10 的数据"
+- "查看这个 AI 表格里有哪些工作表"
+- "往任务表里添加三条记录"
 
 ## 项目结构
 
