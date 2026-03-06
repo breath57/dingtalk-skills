@@ -6,13 +6,13 @@
 
 让 AI Agent 直接操作钉钉——无需手写 API 调用，无需手动管理 Token，对话即操作。
 
-基于 [Anthropic skills 规范](https://github.com/anthropics/skills) 构建，安装一行命令，Agent 即可理解"什么时候该调钉钉 API、该调哪个、参数怎么填"，并自动完成认证、配置持久化、错误处理。
+基于 [Anthropic skills 规范](https://github.com/anthropics/skills) 构建，仅依赖 `curl`，无需安装 Python、SDK 或任何第三方库。安装一行命令，Agent 即可理解"什么时候该调钉钉 API、该调哪个、参数怎么填"，并自动完成认证、配置持久化、错误处理。
 
 ## 为什么用这个
 
 - **对话即操作**："帮我在任务表里加三条记录" → Agent 自动完成，无需你知道任何 API
+- **零依赖**：仅使用 `curl` 发起 HTTP 请求，无需安装 Python、SDK 或任何第三方库
 - **一次配置，永久生效**：首次使用时 Agent 统一询问 appKey/appSecret/operatorId，写入 `~/.dingtalk-skills/config`，后续所有技能直接复用，不再重复问
-- **开箱即用**：两个技能覆盖钉钉最高频的文档和表格场景，10 分钟内跑通完整流程
 
 ## 技能列表
 
