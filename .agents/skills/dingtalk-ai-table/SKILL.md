@@ -35,6 +35,39 @@ Content-Type: application/json
 
 ---
 
+## operatorId 说明
+
+所有接口都**强制要求** `operatorId` 参数，值为操作人的 **`unionId`**（不是 `userId`，两者不同）。
+
+### 方法一：已知 userId → 查 unionId（最常用）
+
+**第一步：** 用 appKey/appSecret 获取旧式 `access_token`（与新版 accessToken 不同，单独获取）：
+```
+GET https://oapi.dingtalk.com/gettoken?appkey=<appKey>&appsecret=<appSecret>
+```
+返回：`{ "access_token": "xxx", "expires_in": 7200 }`
+
+**第二步：** 用 userId 查询用户详情，取出 unionId：
+```
+POST https://oapi.dingtalk.com/topapi/v2/user/get?access_token=<旧式token>
+Content-Type: application/json
+
+{ "userid": "<钉钉 userId>" }
+```
+返回：`result.unionid` 字段即为 unionId。
+
+> 专属钉钉组织：使用 `result.unionid`（无下划线），`result.union_id`（有下划线）可能为空。
+
+### 方法二：机器人/消息场景
+
+用户通过钉钉机器人或消息触发时，消息体中直接包含 `senderUnionId` 字段，可直接作为 `operatorId` 使用。
+
+### 方法三：请用户告知
+
+若上述方式不可用，可让用户提供自己的 userId（个人信息页可查），再按方法一转换。若用户不知道 userId，也可让其直接提供 unionId（在个人名片链接或开放平台用户详情中可见）。
+
+---
+
 ## 如何获取 base_id
 
 `base_id` 就是 AI 表格文件的 nodeId，存在于分享链接中：
