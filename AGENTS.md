@@ -18,6 +18,11 @@ dingtalk-skills/
 ├── README.md                          # 中文文档
 ├── README_EN.md                       # English documentation
 ├── skills-lock.json                   # 技能依赖锁定文件（勿手动修改）
+├── tests/                             # 集成测试
+│   ├── .env                           # 测试凭证（不提交到 git）
+│   ├── conftest.py
+│   ├── dingtalk-document/
+│   └── dingtalk-ai-table/
 └── .agents/
     └── skills/
         ├── skill-creator/             # 技能开发工具（由 anthropics 提供）
@@ -37,8 +42,8 @@ dingtalk-skills/
 
 | 技能名称 | 路径 | 状态 | 功能描述 |
 |---|---|---|---|
-| `dingtalk-document` | `.agents/skills/dingtalk-document/` | ✅ 可用 | 钉钉知识库与文档的创建、查询、目录浏览、成员管理 |
-| `dingtalk-ai-table` | `.agents/skills/dingtalk-ai-table/` | ✅ 可用 | 钉钉 AI 表格的工作表管理、单元格读写、行列操作 |
+| `dingtalk-document` | `.agents/skills/dingtalk-document/` | ✅ 可用 | 钉钉知识库与文档的创建、查询、目录浏览、内容读写、成员管理 |
+| `dingtalk-ai-table` | `.agents/skills/dingtalk-ai-table/` | ✅ 可用 | 钉钉 AI 表格的工作表管理、字段管理、记录增删改查 |
 | `skill-creator` | `.agents/skills/skill-creator/` | ✅ 可用 | 技能开发框架（由 anthropics/skills 提供） |
 
 ---
@@ -77,6 +82,25 @@ description: <触发描述，必须包含中文关键词，覆盖用户可能说
 - `references/api.md` 中保留完整的请求/响应 JSON 示例
 - 错误码表需包含：错误码、说明、建议处理方式
 - 所有接口须注明所需的钉钉应用权限
+
+### 5. 测试规范
+
+每个技能须包含完整的集成测试，存放在 `tests/<skill-name>/` 目录下：
+
+```
+tests/
+├── .env                    # 测试用凭证（不提交到 git）
+├── conftest.py             # 公共 fixture（token、测试资源的创建与清理）
+└── <skill-name>/
+    ├── test_<module>.py    # 按功能模块拆分测试文件
+    └── ...
+```
+
+**测试要求：**
+- 使用真实 API 调用（不 mock），验证接口实际可用
+- 每个核心操作（增/删/改/查）均须有对应测试用例
+- `conftest.py` 中的 fixture 负责创建测试资源并在测试结束后自动清理，不留脏数据
+- 新增或修改技能后，须确保 `uv run pytest tests/<skill-name>/` 全部通过再提交
 
 ---
 

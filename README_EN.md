@@ -4,7 +4,15 @@
 
 ---
 
-A collection of [agent skills](https://github.com/anthropics/skills) for DingTalk, enabling AI agents to interact with DingTalk APIs directly — creating documents, reading table data, managing approvals, sending messages, and more.
+Let your AI Agent operate DingTalk directly — no manual API calls, no token management, just conversation.
+
+Built on the [Anthropic skills spec](https://github.com/anthropics/skills). Install with one command and your agent automatically understands when to call DingTalk APIs, which endpoint to use, and how to fill in the parameters — including auth, config persistence, and error handling.
+
+## Why use this
+
+- **Talk, don't code**: "Add three records to the task table" → Agent handles it end-to-end, no API knowledge required
+- **Configure once, use everywhere**: On first run, the agent collects appKey/appSecret/operatorId in a single prompt, saves to `~/.dingtalk-skills/config`, and reuses across all skills automatically
+- **Production-ready from day one**: Full CRUD coverage for DingTalk's most-used document and table APIs, with live tests verifying every endpoint
 
 ## Skills
 
@@ -28,6 +36,8 @@ npx skills add breath57/dingtalk-skills@dingtalk-document
 | Delete document | Remove a document from a workspace |
 | Manage members | Add/remove collaborators and set permission levels |
 
+> Example: "Write this meeting summary into the '2026-03' folder under the 'Project Docs' workspace" → Agent finds the directory, creates the document, and writes the content.
+
 #### [dingtalk-ai-table](.agents/skills/dingtalk-ai-table/) — AI Table (Notable)
 
 ```bash
@@ -36,35 +46,45 @@ npx skills add breath57/dingtalk-skills@dingtalk-ai-table
 
 | Capability | Description |
 |---|---|
-| List sheets | Get all sheets in an AI table |
+| List sheets | Get all sheets and IDs in an AI table |
 | Get / create / delete sheet | Manage sheets within an AI table |
-| List fields | Get all field definitions and types (text / number / date, etc.) |
+| List fields | Get all field names and types (text / number / date, etc.) |
 | Create / update / delete field | Manage column definitions |
 | Insert records | Batch-insert data rows into a sheet |
 | List records | Paginated read of all records |
 | Update record | Modify specific field values by recordId |
 | Delete records | Batch-delete rows by recordId |
 
+> Example: "Show me all records in the task sheet where status is 'In Progress'" → Agent fetches field definitions, paginates through all records, and filters the results.
+
 ### 🗓️ Planned
 
-`dingtalk-auth` · `dingtalk-message` · `dingtalk-contacts` · `dingtalk-approval` · `dingtalk-calendar` · `dingtalk-todo` · `dingtalk-attendance` · `dingtalk-meeting` · `dingtalk-ai-agent`
+`dingtalk-message` · `dingtalk-approval` · `dingtalk-contacts` · `dingtalk-calendar` · `dingtalk-todo` · `dingtalk-attendance` · `dingtalk-meeting`
 
-## Configuration Management
+## Quick Start
 
-All skills share a single config file at `~/.dingtalk-skills/config` (plain key=value format):
+**Step 1: Install skills**
+
+```bash
+npx skills add breath57/dingtalk-skills@dingtalk-document
+npx skills add breath57/dingtalk-skills@dingtalk-ai-table
+```
+
+**Step 2: Just talk**
+
+On first run, the agent checks `~/.dingtalk-skills/config`, asks for anything missing in one go, and saves it. Then:
 
 ```
-DINGTALK_APP_KEY=dingXXXXXX
-DINGTALK_APP_SECRET=XXXXXX
-DINGTALK_OPERATOR_ID=XXXXXX
+"List my DingTalk knowledge bases"
+"Add a record to the 'Backlog' sheet: title=Login fix, priority=High"
+"Delete all records marked 'Done' from the task table"
 ```
-
-**On first use**, the agent checks the config file, asks for any missing values in a single prompt, and writes them automatically. Common credentials (appKey, appSecret, operatorId) only need to be entered once and apply to all skills.
 
 ## Prerequisites
 
-1. DingTalk enterprise internal app with relevant API permissions
-2. `appKey` and `appSecret` from [DingTalk Open Platform](https://open.dingtalk.com/)
+1. A DingTalk enterprise internal app on [DingTalk Open Platform](https://open.dingtalk.com/)
+2. Relevant API permissions enabled (Docs / Notable)
+3. Your `appKey`, `appSecret`, and DingTalk `userId` — the agent will walk you through the setup
 
 ## License
 
