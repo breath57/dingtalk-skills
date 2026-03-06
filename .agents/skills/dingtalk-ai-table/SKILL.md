@@ -9,7 +9,7 @@ description: 钉钉 AI 表格（多维表格）操作。当用户提到"钉钉AI
 
 **核心概念：**
 - **AI 表格**（`.able` 文件）：多维表格，使用 Notable API（`/v1.0/notable`），**不是**普通电子表格
-- **base_id**：AI 表格文件的 nodeId，从分享链接提取
+- **base_id**：AI 表格文件的 nodeId，是表格在钉钉文档系统中的唯一标识
 - **工作表（Sheet）**：AI 表格内的单张表，包含字段和记录
 - **字段（Field）**：列定义，有名称和类型（`text`、`number`、`date` 等）
 - **记录（Record）**：数据行，包含各字段的值
@@ -18,7 +18,41 @@ API 详情见 `references/api.md`。
 
 ---
 
+## 配置管理（每次开始前必读）
+
+### 配置文件路径
+
+`~/.dingtalk-skills/config`（跨会话保留，所有 dingtalk-skills 共用同一文件）
+
+### 本技能需要的配置说明
+
+| 键 | 说明 | 来源 |
+|---|---|---|
+| `DINGTALK_APP_KEY` | 钉钉应用 appKey | 开放平台 → 应用管理 → 凭证信息 |
+| `DINGTALK_APP_SECRET` | 钉钉应用 appSecret | 同上 |
+| `DINGTALK_OPERATOR_ID` | 操作人 unionId | 见下方"为什么需要 operatorId"章节 |
+| `DINGTALK_AI_TABLE_BASE_ID` | AI 表格的 nodeId | 从 AI 表格分享链接提取 |
+
+### 启动流程（每次执行任务前）
+
+1. **读取配置**：检查 `~/.dingtalk-skills/config` 是否存在，解析已有键值
+2. **识别缺失项**：找出上表中尚未配置的键
+3. **一次性收集**：将所有缺失项合并为一条提问，**不要逐条询问**，例如：
+   > 需要以下信息才能继续（已有的无需再填）：
+   > - 钉钉应用 appKey（钉钉开放平台 → 应用管理 → 凭证信息）
+   > - 钉钉应用 appSecret
+   > - AI 表格链接（用于提取 base_id）
+   > - 你的钉钉 userId 或 unionId（以便以你的身份操作表格）
+4. **持久化**：将用户提供的值追加写入 config，后续直接读取，无需再问
+5. **执行任务**：配置完整后开始操作
+
+> **注意**：`APP_KEY`/`APP_SECRET`/`OPERATOR_ID` 属于凭证，禁止在输出中完整打印，确认时仅显示前 4 位 + `****`。
+
+---
+
 ## 认证
+
+每次调用 API 前，用 appKey/appSecret 获取当次的 accessToken（有效期 2 小时）：
 
 ```
 POST https://api.dingtalk.com/v1.0/oauth2/accessToken
@@ -31,52 +65,60 @@ Content-Type: application/json
 - 请求头：`x-acs-dingtalk-access-token: <accessToken>`
 - 查询参数：`operatorId=<用户 unionId>`（所有写操作及部分读操作必须）
 
-若用户未提供 `appKey`、`appSecret`、`base_id`（AI 表格链接），主动询问。
+---
+
+## 为什么需要 base_id
+
+钉钉文档系统中每个文件（文档、表格、AI 表格）都有一个全局唯一的 **nodeId**，即 `base_id`。它的作用类似数据库主键——API 通过它定位到具体是哪个 AI 表格文件，因为账号下可能有多个 `.able` 文件。
+
+**从链接提取 base_id：**
+
+```
+https://alidocs.dingtalk.com/i/nodes/<base_id>?...
+                                     ↑ 这一段就是 base_id
+```
+
+请用户提供 AI 表格的分享链接，从 `/nodes/` 后截取 ID 片段。首次获取后写入 config，后续无需再问。
 
 ---
 
-## operatorId 说明
+## 为什么需要 operatorId（unionId）
 
-所有接口都**强制要求** `operatorId` 参数，值为操作人的 **`unionId`**（不是 `userId`，两者不同）。
+钉钉开放平台要求所有**写操作**必须代表一个真实用户身份执行，而不是以匿名应用身份操作。`operatorId` 就是声明"这个操作是谁做的"——它会被记录到变更日志、触发对应用户的通知，并用于权限校验。
 
-### 方法一：已知 userId → 查 unionId（最常用）
+- 值为操作人的 **`unionId`**（钉钉跨组织唯一 ID），**不是** `userId`（仅组织内唯一）
+- 错误传入 userId 会导致权限报错或操作归属错误
 
-**第一步：** 用 appKey/appSecret 获取旧式 `access_token`（与新版 accessToken 不同，单独获取）：
+### 如何获取 unionId
+
+**方法一：已知 userId → 换取 unionId（最常用）**
+
+`userId` 通常可从通讯录、免登、消息回调等场景直接获得。
+
+第一步：获取旧式 `access_token`（与新版 accessToken 不同，此处单独获取）：
 ```
 GET https://oapi.dingtalk.com/gettoken?appkey=<appKey>&appsecret=<appSecret>
 ```
 返回：`{ "access_token": "xxx", "expires_in": 7200 }`
 
-**第二步：** 用 userId 查询用户详情，取出 unionId：
+第二步：用 userId 查询用户详情，取出 unionId：
 ```
 POST https://oapi.dingtalk.com/topapi/v2/user/get?access_token=<旧式token>
 Content-Type: application/json
 
 { "userid": "<钉钉 userId>" }
 ```
-返回：`result.unionid` 字段即为 unionId。
+返回字段 `result.unionid`（无下划线）即为 unionId。
 
-> 专属钉钉组织：使用 `result.unionid`（无下划线），`result.union_id`（有下划线）可能为空。
+> 注意：`result.union_id`（有下划线）在专属钉钉组织中可能为空，请使用 `result.unionid`。
 
-### 方法二：机器人/消息场景
+**方法二：机器人/消息场景**
 
-用户通过钉钉机器人或消息触发时，消息体中直接包含 `senderUnionId` 字段，可直接作为 `operatorId` 使用。
+用户通过钉钉机器人或消息触发时，消息体中直接包含 `senderUnionId` 字段，可直接作为 `operatorId` 使用，无需额外查询。
 
-### 方法三：请用户告知
+**方法三：直接询问用户**
 
-若上述方式不可用，可让用户提供自己的 userId（个人信息页可查），再按方法一转换。若用户不知道 userId，也可让其直接提供 unionId（在个人名片链接或开放平台用户详情中可见）。
-
----
-
-## 如何获取 base_id
-
-`base_id` 就是 AI 表格文件的 nodeId，存在于分享链接中：
-
-```
-https://alidocs.dingtalk.com/i/nodes/<base_id>?...
-```
-
-请用户提供 AI 表格链接，从中提取 `/nodes/` 后面的 ID 片段。
+若上述方式不可用，在初始配置阶段询问用户提供 userId 或 unionId（均可在钉钉个人信息页查看）。获取后写入 config，后续操作无需重复获取。
 
 ---
 
