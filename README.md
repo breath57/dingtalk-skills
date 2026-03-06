@@ -6,7 +6,7 @@
 
 让 AI Agent 直接操作钉钉——无需手写 API 调用，无需手动管理 Token，对话即操作。
 
-基于 [Anthropic skills 规范](https://github.com/anthropics/skills) 构建，仅依赖 `curl`，无需安装 Python、SDK 或任何第三方库。安装一行命令，Agent 即可理解"什么时候该调钉钉 API、该调哪个、参数怎么填"，并自动完成认证、配置持久化、错误处理。
+基于 [Anthropic skills 规范](https://github.com/anthropics/skills) 构建，**仅依赖 `curl`**，无需安装 Python、SDK 或任何第三方库。安装一行命令，Agent 即可理解"什么时候该调钉钉 API、该调哪个、参数怎么填"，并**自动管理配置**、错误处理。
 
 ## 为什么用这个
 

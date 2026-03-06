@@ -6,7 +6,7 @@
 
 Let your AI Agent operate DingTalk directly — no manual API calls, no token management, just conversation.
 
-Built on the [Anthropic skills spec](https://github.com/anthropics/skills), with zero dependencies — only `curl` for HTTP requests, no Python, no SDK, nothing extra to install. Install with one command and your agent automatically understands when to call DingTalk APIs, which endpoint to use, and how to fill in the parameters — including auth, config persistence, and error handling.
+Built on the [Anthropic skills spec](https://github.com/anthropics/skills), with **zero dependencies — only `curl`** for HTTP requests, no Python, no SDK, nothing extra to install. Install with one command and your agent automatically understands when to call DingTalk APIs, which endpoint to use, and how to fill in the parameters — including **automatic config management**, and error handling.
 
 ## Why use this
 
