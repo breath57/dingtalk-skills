@@ -58,9 +58,31 @@ npx skills add breath57/dingtalk-skills@dingtalk-ai-table
 
 > Example: "Show me all records in the task sheet where status is 'In Progress'" → Agent fetches field definitions, paginates through all records, and filters the results.
 
+#### [dingtalk-message](.agents/skills/dingtalk-message/) — Message Sending
+
+```bash
+npx skills add breath57/dingtalk-skills@dingtalk-message
+```
+
+| Capability | Description |
+|---|---|
+| Webhook robot - text | Send plain text messages to a group |
+| Webhook robot - Markdown | Send rich Markdown notifications to a group |
+| Webhook robot - ActionCard | Send interactive cards with buttons (single/multi) |
+| Webhook robot - Link/FeedCard | Send link messages and aggregated feed cards |
+| Webhook signing | Support HMAC-SHA256 signature security mode |
+| Robot single chat | Send messages to specific users via internal app robot |
+| Robot group chat | Send messages to groups via robot |
+| Message recall | Recall single-chat / group-chat robot messages |
+| Read status query | Query read/unread status of single-chat messages |
+| Work notification | Send work notifications to specific users via app |
+| Work notification query/recall | Query send results and recall sent notifications |
+
+> Example: "Send a group message saying v2.1 is live today, use Markdown" → Agent constructs the message body and sends it.
+
 ### 🗓️ Planned
 
-`dingtalk-message` · `dingtalk-approval` · `dingtalk-contacts` · `dingtalk-calendar` · `dingtalk-todo` · `dingtalk-attendance` · `dingtalk-meeting`
+`dingtalk-contact` · `dingtalk-todo` · `dingtalk-approval` · `dingtalk-calendar` · `dingtalk-attendance` · `dingtalk-meeting`
 
 ## Quick Start
 
@@ -69,6 +91,7 @@ npx skills add breath57/dingtalk-skills@dingtalk-ai-table
 ```bash
 npx skills add breath57/dingtalk-skills@dingtalk-document
 npx skills add breath57/dingtalk-skills@dingtalk-ai-table
+npx skills add breath57/dingtalk-skills@dingtalk-message
 ```
 
 **Step 2: Just talk**
