@@ -23,7 +23,8 @@ dingtalk-skills/
 │   ├── conftest.py
 │   ├── dingtalk-document/
 │   ├── dingtalk-ai-table/
-│   └── dingtalk-message/
+│   ├── dingtalk-message/
+│   └── dingtalk-todo/
 └── .agents/
     └── skills/
         ├── skill-creator/             # 技能开发工具（由 anthropics 提供）
@@ -35,10 +36,16 @@ dingtalk-skills/
         │   ├── SKILL.md
         │   └── references/
         │       └── api.md
-        └── dingtalk-message/          # 钉钉消息发送技能
-            ├── SKILL.md
-            └── references/
-                └── api.md
+        ├── dingtalk-message/          # 钉钉消息发送技能
+        │   ├── SKILL.md
+        │   └── references/
+        │       └── api.md
+        ├── dingtalk-todo/             # 钉钉待办管理技能
+        │   ├── SKILL.md
+        │   └── references/
+        │       └── api.md
+        └── dingtalk-skill-creator/   # 技能创建流程工具
+            └── SKILL.md
 ```
 
 ---
@@ -50,6 +57,8 @@ dingtalk-skills/
 | `dingtalk-document` | `.agents/skills/dingtalk-document/` | ✅ 可用 | 钉钉知识库与文档的创建、查询、目录浏览、内容读写、成员管理 |
 | `dingtalk-ai-table` | `.agents/skills/dingtalk-ai-table/` | ✅ 可用 | 钉钉 AI 表格的工作表管理、字段管理、记录增删改查 |
 | `dingtalk-message` | `.agents/skills/dingtalk-message/` | ✅ 可用 | 钉钉消息发送：Webhook 机器人、企业内部机器人单聊/群聊、工作通知 |
+| `dingtalk-todo` | `.agents/skills/dingtalk-todo/` | ✅ 可用 | 钉钉待办管理：创建、查询、更新、标记完成/撤销、删除待办任务 |
+| `dingtalk-skill-creator` | `.agents/skills/dingtalk-skill-creator/` | ✅ 可用 | 标准化创建新钉钉技能的开发流程工具 |
 | `skill-creator` | `.agents/skills/skill-creator/` | ✅ 可用 | 技能开发框架（由 anthropics/skills 提供） |
 
 ---

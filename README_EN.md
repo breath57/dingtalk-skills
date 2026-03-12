@@ -88,9 +88,26 @@ npx skills add breath57/dingtalk-skills@dingtalk-message
 
 > Example: "Send a group message saying v2.1 is live today, use Markdown" → Agent constructs the message body and sends it.
 
+#### [dingtalk-todo](.agents/skills/dingtalk-todo/) — DingTalk Todo
+
+```bash
+npx skills add breath57/dingtalk-skills@dingtalk-todo
+```
+
+| Capability | Description |
+|---|---|
+| Create todo | Create a task with title, description, due date, and priority |
+| Get todo detail | Fetch task details by taskId |
+| List todos / completed | Paginated list of undone or completed tasks |
+| Update todo | Modify title, description, due date, priority, etc. |
+| Mark done / reopen | Mark a task as complete or reopen it |
+| Delete todo | Remove a specific todo task |
+
+> Example: "Create a todo: finish competitive analysis by next Friday" → Agent auto-sets the due date and creates the task.
+
 ### 🗓️ Planned
 
-`dingtalk-contact` · `dingtalk-todo` · `dingtalk-approval` · `dingtalk-calendar` · `dingtalk-attendance` · `dingtalk-meeting`
+`dingtalk-contact` · `dingtalk-approval` · `dingtalk-calendar` · `dingtalk-attendance` · `dingtalk-meeting`
 
 ## Quick Start
 
@@ -100,6 +117,7 @@ npx skills add breath57/dingtalk-skills@dingtalk-message
 npx skills add breath57/dingtalk-skills@dingtalk-document
 npx skills add breath57/dingtalk-skills@dingtalk-ai-table
 npx skills add breath57/dingtalk-skills@dingtalk-message
+npx skills add breath57/dingtalk-skills@dingtalk-todo
 ```
 
 **Step 2: Just talk**
@@ -109,13 +127,14 @@ On first run, the agent checks `~/.dingtalk-skills/config`, asks for anything mi
 ```
 "List my DingTalk knowledge bases"
 "Add a record to the 'Backlog' sheet: title=Login fix, priority=High"
-"Delete all records marked 'Done' from the task table"
+"Send a group message saying v2.1 is live, use Markdown format"
+"Create a todo: finish competitive analysis by next Friday"
 ```
 
 ## Prerequisites
 
 1. A DingTalk enterprise internal app on [DingTalk Open Platform](https://open.dingtalk.com/)
-2. Relevant API permissions enabled (Docs / Notable)
+2. Relevant API permissions enabled (Knowledge Base / AI Table / Robot Message / Todo, etc.)
 3. Your `appKey`, `appSecret`, and DingTalk `userId` — the agent will walk you through the setup
 
 ## License
