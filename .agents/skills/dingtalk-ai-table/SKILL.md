@@ -30,7 +30,8 @@ API 详情见 `references/api.md`。
 |---|---|---|
 | `DINGTALK_APP_KEY` | 钉钉应用 appKey | 开放平台 → 应用管理 → 凭证信息 |
 | `DINGTALK_APP_SECRET` | 钉钉应用 appSecret | 同上 |
-| `DINGTALK_OPERATOR_ID` | 操作人 unionId | 见下方"为什么需要 operatorId"章节 |
+| `DINGTALK_USER_ID` | 当前用户的企业员工 ID（userId） | 管理后台 → 通讯录 → 成员管理 → 点击姓名查看（不是手机号、不是 unionId） |
+| `DINGTALK_OPERATOR_ID` | 当前用户的 unionId | 首次由脚本自动通过 userId 转换获取并写入 |
 | `DINGTALK_AI_TABLE_BASE_ID` | AI 表格的 nodeId | 从 AI 表格分享链接提取 |
 
 ### 启动流程（每次执行任务前）
@@ -42,7 +43,7 @@ API 详情见 `references/api.md`。
    > - 钉钉应用 appKey（钉钉开放平台 → 应用管理 → 凭证信息）
    > - 钉钉应用 appSecret
    > - AI 表格链接（用于提取 base_id）
-   > - 你的钉钉 userId 或 unionId（以便以你的身份操作表格）
+   > - 你的钉钉 userId（管理后台 → 通讯录 → 成员管理 → 点击姓名查看）
 4. **持久化**：将用户提供的值追加写入 config，后续直接读取，无需再问
 5. **执行任务**：配置完整后开始操作
 
@@ -86,39 +87,34 @@ https://alidocs.dingtalk.com/i/nodes/<base_id>?...
 
 钉钉开放平台要求所有**写操作**必须代表一个真实用户身份执行，而不是以匿名应用身份操作。`operatorId` 就是声明"这个操作是谁做的"——它会被记录到变更日志、触发对应用户的通知，并用于权限校验。
 
-- 值为操作人的 **`unionId`**（钉钉跨组织唯一 ID），**不是** `userId`（仅组织内唯一）
-- 错误传入 userId 会导致权限报错或操作归属错误
+- AI 表格 API 的 `operatorId` 参数使用 **unionId**（跨组织唯一），**不是** userId
+- 配置中优先收集 `userId`（管理后台直接查看），系统自动转换为 `unionId`
 
-### 如何获取 unionId
+### 身份标识说明
 
-**方法一：已知 userId → 换取 unionId（最常用）**
+| 标识 | 说明 | 如何获取 |
+|---|---|---|
+| `userId`（= `staffId`） | 企业内部员工 ID，**最容易获取** | 管理后台 → 通讯录 → 成员管理 → 点击姓名查看 |
+| `unionId` | 跨企业/跨应用唯一 | 通过 userId 调用 API 转换获取 |
 
-`userId` 通常可从通讯录、免登、消息回调等场景直接获得。
+### userId → unionId 自动转换
 
-第一步：获取旧式 `access_token`（与新版 accessToken 不同，此处单独获取）：
+当配置中有 `DINGTALK_USER_ID` 但缺少 `DINGTALK_OPERATOR_ID` 时，自动执行转换：
+
+```bash
+# 1. 获取旧版 token
+OLD_TOKEN=$(curl -s "https://oapi.dingtalk.com/gettoken?appkey=${APP_KEY}&appsecret=${APP_SECRET}" | grep -o '"access_token":"[^"]*"' | cut -d'"' -f4)
+
+# 2. userId → unionId
+UNION_ID=$(curl -s -X POST "https://oapi.dingtalk.com/topapi/v2/user/get?access_token=${OLD_TOKEN}" \
+  -H 'Content-Type: application/json' \
+  -d "{\"userid\":\"${USER_ID}\"}" | grep -o '"unionid":"[^"]*"' | cut -d'"' -f4)
+
+# 3. 写入配置文件
+echo "DINGTALK_OPERATOR_ID=$UNION_ID" >> ~/.dingtalk-skills/config
 ```
-GET https://oapi.dingtalk.com/gettoken?appkey=<appKey>&appsecret=<appSecret>
-```
-返回：`{ "access_token": "xxx", "expires_in": 7200 }`
 
-第二步：用 userId 查询用户详情，取出 unionId：
-```
-POST https://oapi.dingtalk.com/topapi/v2/user/get?access_token=<旧式token>
-Content-Type: application/json
-
-{ "userid": "<钉钉 userId>" }
-```
-返回字段 `result.unionid`（无下划线）即为 unionId。
-
-> 注意：`result.union_id`（有下划线）在专属钉钉组织中可能为空，请使用 `result.unionid`。
-
-**方法二：机器人/消息场景**
-
-用户通过钉钉机器人或消息触发时，消息体中直接包含 `senderUnionId` 字段，可直接作为 `operatorId` 使用，无需额外查询。
-
-**方法三：直接询问用户**
-
-若上述方式不可用，在初始配置阶段询问用户提供 userId 或 unionId（均可在钉钉个人信息页查看）。获取后写入 config，后续操作无需重复获取。
+> ⚠️ 注意：返回体中 `result.unionid`（无下划线）有值，`result.union_id`（有下划线）可能为空。
 
 ---
 
