@@ -1,8 +1,10 @@
-# 钉钉 Agent 技能库（dingtalk-skills）
+# 钉钉 Agent 技能库（dingtalk-skills
 
 [English](README_EN.md) | 中文
 
 ---
+
+**已适配 [OpenClaw](https://openclaw.ai) 🦞**，可从 [ClawHub](https://clawhub.ai) 一键安装。
 
 让 AI Agent 直接操作钉钉——无需手写 API 调用，无需手动管理 Token，对话即操作。
 
@@ -19,6 +21,8 @@
 ### ✅ 已上线
 
 #### [dingtalk-document](.agents/skills/dingtalk-document/) — 钉钉知识库 & 文档
+
+🦞 [ClawHub · dingtalk-document](https://clawhub.ai/breath57/dingtalk-document)
 
 ```bash
 npx skills add breath57/dingtalk-skills@dingtalk-document
@@ -40,6 +44,8 @@ npx skills add breath57/dingtalk-skills@dingtalk-document
 
 #### [dingtalk-ai-table](.agents/skills/dingtalk-ai-table/) — 钉钉 AI 表格
 
+🦞 [ClawHub · dingtalk-ai-table](https://clawhub.ai/breath57/dingtalk-ai-table-only-curl)
+
 ```bash
 npx skills add breath57/dingtalk-skills@dingtalk-ai-table
 ```
@@ -58,6 +64,8 @@ npx skills add breath57/dingtalk-skills@dingtalk-ai-table
 > 示例："查一下任务表里状态是'进行中'的所有记录" → Agent 自动拉取字段定义、翻页读取、过滤返回。
 
 #### [dingtalk-message](.agents/skills/dingtalk-message/) — 钉钉消息发送
+
+🦞 [ClawHub · dingtalk-message](https://clawhub.ai/breath57/dingtalk-message)
 
 ```bash
 npx skills add breath57/dingtalk-skills@dingtalk-message

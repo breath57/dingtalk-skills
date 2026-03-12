@@ -1,8 +1,10 @@
-# dingtalk-skills
+# dingtalk-skills 
 
 中文 | [English](README_EN.md)
 
 ---
+
+**Adapted for [OpenClaw](https://openclaw.ai) 🦞** — install from [ClawHub](https://clawhub.ai) with one click.
 
 Let your AI Agent operate DingTalk directly — no manual API calls, no token management, just conversation.
 
@@ -20,6 +22,8 @@ Built on the [Anthropic skills spec](https://github.com/anthropics/skills), with
 ### ✅ Available
 
 #### [dingtalk-document](.agents/skills/dingtalk-document/) — Knowledge Base & Documents
+
+[ClawHub](https://clawhub.ai/breath57/dingtalk-document)
 
 ```bash
 npx skills add breath57/dingtalk-skills@dingtalk-document
@@ -41,6 +45,8 @@ npx skills add breath57/dingtalk-skills@dingtalk-document
 
 #### [dingtalk-ai-table](.agents/skills/dingtalk-ai-table/) — AI Table (Notable)
 
+🦞 [ClawHub · dingtalk-ai-table](https://clawhub.ai/breath57/dingtalk-ai-table-only-curl)
+
 ```bash
 npx skills add breath57/dingtalk-skills@dingtalk-ai-table
 ```
@@ -59,6 +65,8 @@ npx skills add breath57/dingtalk-skills@dingtalk-ai-table
 > Example: "Show me all records in the task sheet where status is 'In Progress'" → Agent fetches field definitions, paginates through all records, and filters the results.
 
 #### [dingtalk-message](.agents/skills/dingtalk-message/) — Message Sending
+
+🦞 [ClawHub · dingtalk-message](https://clawhub.ai/breath57/dingtalk-message)
 
 ```bash
 npx skills add breath57/dingtalk-skills@dingtalk-message
