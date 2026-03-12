@@ -5,3 +5,7 @@ __pycache__/
 *.pyc
 *.pyo
 .pytest_cache/
+
+# local drafts & temp files (not for repo)
+docs/
+temp/
