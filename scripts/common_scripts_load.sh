@@ -15,7 +15,8 @@ TARGET_SKILLS=(
 #   dingtalk-document
 #   dingtalk-message
 #   dingtalk-skill-creator
-  dingtalk-todo
+#   dingtalk-todo
+  dingtalk-contact
 )
 
 # 配置：要分发的文件列表（相对于 scripts/common/）
