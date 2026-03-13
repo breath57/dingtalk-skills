@@ -23,7 +23,7 @@ Built on the [Anthropic skills spec](https://github.com/anthropics/skills), with
 
 #### [dingtalk-document](.agents/skills/dingtalk-document/) — Knowledge Base & Documents
 
-[ClawHub](https://clawhub.ai/breath57/dingtalk-document)
+🦞 [ClawHub · dingtalk-document](https://clawhub.ai/breath57/dingtalk-document)
 
 ```bash
 npx skills add breath57/dingtalk-skills@dingtalk-document
@@ -90,6 +90,8 @@ npx skills add breath57/dingtalk-skills@dingtalk-message
 
 #### [dingtalk-todo](.agents/skills/dingtalk-todo/) — DingTalk Todo
 
+🦞 [ClawHub · dingtalk-todo](https://clawhub.ai/breath57/dingtalk-todo)
+
 ```bash
 npx skills add breath57/dingtalk-skills@dingtalk-todo
 ```
@@ -106,6 +108,8 @@ npx skills add breath57/dingtalk-skills@dingtalk-todo
 > Example: "Create a todo: finish competitive analysis by next Friday" → Agent auto-sets the due date and creates the task.
 
 #### [dingtalk-contact](.agents/skills/dingtalk-contact/) — DingTalk Directory
+
+🦞 [ClawHub · dingtalk-contact](https://clawhub.ai/breath57/dingtalk-contact)
 
 ```bash
 npx skills add breath57/dingtalk-skills@dingtalk-contact
@@ -125,17 +129,6 @@ npx skills add breath57/dingtalk-skills@dingtalk-contact
 | Total employee count | Count all or active employees in the org |
 
 > Example: "Find Zhang San's mobile number and department" → Agent searches the user, fetches details, and returns the info.
-
-| Capability | Description |
-|---|---|
-| Create todo | Create a task with title, description, due date, and priority |
-| Get todo detail | Fetch task details by taskId |
-| List todos / completed | Paginated list of undone or completed tasks |
-| Update todo | Modify title, description, due date, priority, etc. |
-| Mark done / reopen | Mark a task as complete or reopen it |
-| Delete todo | Remove a specific todo task |
-
-> Example: "Create a todo: finish competitive analysis by next Friday" → Agent auto-sets the due date and creates the task.
 
 ### 🗓️ Planned
 
