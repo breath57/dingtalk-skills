@@ -18,19 +18,19 @@ show_help() {
 用法: bash scripts/common/dt_helper.sh <命令> [参数]
 
 Token 管理（两种 token 互不兼容，按域名区分）：
-  --token [--force]    获取新版 accessToken（用于 api.dingtalk.com 域名的所有接口）
+  --token [--nocache]  获取新版 accessToken（用于 api.dingtalk.com 域名的所有接口）
                        适用：待办、文档、AI 表格等 api.dingtalk.com 域名下所有版本的接口
                        请求头：x-acs-dingtalk-access-token: <token>
                        有缓存且未过期则直接返回，否则自动刷新并缓存
-                       --force：跳过缓存，强制重新获取（token 被提前吊销时使用）
+                       --nocache：跳过缓存，强制重新获取（token 被提前吊销时使用）
   --token-info         查看新版 token 缓存状态（是否有效、剩余有效秒数）
   --clear-token        清除缓存的新版 token（下次 --token 时强制重新获取）
-  --old-token [--force]
+  --old-token [--nocache]
                        获取旧版 access_token（用于 oapi.dingtalk.com 域名的所有接口）
                        适用：群消息/工作通知/userId↔unionId 转换等 oapi.dingtalk.com 接口
                        不适用：api.dingtalk.com 接口（如待办、文档、AI表格）
                        ⚠️  新旧两种 token 互不兼容，混用会导致 401/403
-                       --force：跳过缓存，强制重新获取（token 被提前吊销时使用）
+                       --nocache：跳过缓存，强制重新获取（token 被提前吊销时使用）
 
 身份转换：
   --to-unionid [userId]   将 userId 转换为 unionId
@@ -116,7 +116,7 @@ cmd_token() {
   app_secret=$(require_cfg DINGTALK_APP_SECRET)
   now=$(date +%s)
 
-  if [ "$force" != "--force" ]; then
+  if [ "$force" != "--nocache" ]; then
     cached=$(cfg_get DINGTALK_ACCESS_TOKEN)
     expiry=$(cfg_get DINGTALK_TOKEN_EXPIRY)
     if [ -n "$cached" ] && [ -n "$expiry" ] && [ "$now" -lt "$expiry" ]; then
@@ -184,7 +184,7 @@ cmd_old_token() {
   app_secret=$(require_cfg DINGTALK_APP_SECRET)
   now=$(date +%s)
 
-  if [ "$force" != "--force" ]; then
+  if [ "$force" != "--nocache" ]; then
     cached=$(cfg_get DINGTALK_OLD_TOKEN)
     expiry=$(cfg_get DINGTALK_OLD_TOKEN_EXPIRY)
     if [ -n "$cached" ] && [ -n "$expiry" ] && [ "$now" -lt "$expiry" ]; then
