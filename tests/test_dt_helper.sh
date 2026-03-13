@@ -121,7 +121,6 @@ assert_contains "--help 输出包含 --old-token"   "--old-token"   "$out"
 assert_contains "--help 输出包含 --to-unionid"  "--to-unionid"  "$out"
 assert_contains "--help 输出包含 --get"         "--get"         "$out"
 assert_contains "--help 输出包含 --set"         "--set"         "$out"
-assert_contains "--help 输出包含 --init"        "--init"        "$out"
 
 # 无参数也应显示帮助，exit 0
 out2=$(bash "$HELPER")

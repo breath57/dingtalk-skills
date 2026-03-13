@@ -40,7 +40,6 @@ Token 管理（两种 token 互不兼容，按域名区分）：
   --config             查看 ~/.dingtalk-skills/config 中的所有配置项（敏感项脱敏显示）
   --get  KEY [KEY...]  获取一个或多个配置项的值（敏感项脱敏显示）
   --set  KEY=VALUE     将配置项持久化写入配置文件（已存在则更新，不存在则追加，目录自动创建）
-  --init               交互式初始化：引导输入凭证并保存到配置文件
 
 帮助：
   --help, -h           显示此帮助信息
@@ -95,7 +94,7 @@ require_cfg() {
   local val
   val=$(cfg_get "$key")
   if [ -z "$val" ]; then
-    echo "❌ 缺少配置项 ${key}，请先运行: bash scripts/common/dt_helper.sh --init" >&2
+    echo "❌ 缺少配置项 ${key}，请先运行: bash scripts/common/dt_helper.sh --set ${key}=<值>" >&2
     exit 1
   fi
   echo "$val"
@@ -261,7 +260,7 @@ cmd_to_userid() {
 cmd_config() {
   if [ ! -f "$CONFIG" ]; then
     echo "配置文件不存在: $CONFIG"
-    echo "运行 --init 初始化"
+    echo "使用 --set KEY=VALUE 写入配置项"
     return 0
   fi
 
@@ -316,58 +315,6 @@ cmd_set() {
   echo "✅ 已设置 ${key}"
 }
 
-cmd_init() {
-  echo "=== 钉钉开放平台配置初始化 ==="
-  echo "配置将保存至: $CONFIG"
-  echo ""
-
-  local existing_key existing_secret existing_uid
-
-  existing_key=$(cfg_get DINGTALK_APP_KEY)
-  existing_secret=$(cfg_get DINGTALK_APP_SECRET)
-  existing_uid=$(cfg_get DINGTALK_MY_USER_ID)
-
-  # APP_KEY
-  if [ -n "$existing_key" ]; then
-    read -rp "Client ID (AppKey) [当前: ${existing_key}，回车保留]: " input
-    [ -n "$input" ] && cfg_set DINGTALK_APP_KEY "$input"
-  else
-    read -rp "Client ID (AppKey): " input
-    [ -n "$input" ] && cfg_set DINGTALK_APP_KEY "$input" || { echo "❌ 不能为空"; exit 1; }
-  fi
-
-  # APP_SECRET
-  if [ -n "$existing_secret" ]; then
-    read -rsp "Client Secret (AppSecret) [当前已设置，回车保留，输入新值覆盖]: " input
-    echo ""
-    [ -n "$input" ] && cfg_set DINGTALK_APP_SECRET "$input"
-  else
-    read -rsp "Client Secret (AppSecret): " input
-    echo ""
-    [ -n "$input" ] && cfg_set DINGTALK_APP_SECRET "$input" || { echo "❌ 不能为空"; exit 1; }
-  fi
-
-  # USER_ID
-  if [ -n "$existing_uid" ]; then
-    read -rp "企业员工 userId（管理后台通讯录可查，不是手机号）[当前: ${existing_uid}，回车保留]: " input
-    [ -n "$input" ] && cfg_set DINGTALK_MY_USER_ID "$input"
-  else
-    read -rp "企业员工 userId（管理后台通讯录可查，不是手机号）: " input
-    [ -n "$input" ] && cfg_set DINGTALK_MY_USER_ID "$input" || { echo "❌ 不能为空"; exit 1; }
-  fi
-
-  echo ""
-  echo "✅ 配置已保存"
-  echo ""
-
-  # 询问是否立即转换 unionId
-  read -rp "是否立即将 userId 转换为 unionId 并缓存？[y/N]: " yn
-  if [[ "$yn" =~ ^[Yy]$ ]]; then
-    echo "正在转换..."
-    cmd_to_unionid ""
-  fi
-}
-
 # ─────────────────────────────────────────────────────────────────────────────
 # 入口：解析命令
 # ─────────────────────────────────────────────────────────────────────────────
@@ -405,9 +352,6 @@ case "$CMD" in
     ;;
   --set)
     cmd_set "${2:-}"
-    ;;
-  --init)
-    cmd_init
     ;;
   *)
     echo "❌ 未知命令: $CMD" >&2
