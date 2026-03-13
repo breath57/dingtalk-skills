@@ -28,6 +28,7 @@ Token 管理（两种 token 互不兼容，按域名区分）：
                        适用：群消息/工作通知/userId↔unionId 转换等 oapi.dingtalk.com 接口
                        不适用：api.dingtalk.com 接口（如待办、文档、AI表格）
                        ⚠️  新旧两种 token 互不兼容，混用会导致 401/403
+  --clear-old-token    清除缓存的旧版 token（下次 --old-token 时强制重新获取）
 
 身份转换：
   --to-unionid [userId]   将 userId 转换为 unionId
@@ -166,7 +167,13 @@ cmd_token_info() {
 cmd_clear_token() {
   cfg_del DINGTALK_ACCESS_TOKEN
   cfg_del DINGTALK_TOKEN_EXPIRY
-  echo "✅ Token 缓存已清除"
+  echo "✅ 新版 Token 缓存已清除"
+}
+
+cmd_clear_old_token() {
+  cfg_del DINGTALK_OLD_TOKEN
+  cfg_del DINGTALK_OLD_TOKEN_EXPIRY
+  echo "✅ 旧版 Token 缓存已清除"
 }
 
 cmd_old_token() {
@@ -351,6 +358,9 @@ case "$CMD" in
     ;;
   --old-token)
     cmd_old_token
+    ;;
+  --clear-old-token)
+    cmd_clear_old_token
     ;;
   --to-unionid)
     cmd_to_unionid "${2:-}"
