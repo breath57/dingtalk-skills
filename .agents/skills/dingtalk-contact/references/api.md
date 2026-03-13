@@ -1,8 +1,8 @@
 # dingtalk-contact API 参考
 
 > 所有接口均已验证可用。
-> `NEW_TOKEN` = 新版 token（`api.dingtalk.com` 用）
-> `OLD_TOKEN` = 旧版 token（`oapi.dingtalk.com` 用）
+> `NEW_TOKEN` = 新版 token（`api.dingtalk.com` 用），获取方式 `bash scripts/dt_helper.sh --token`
+> `OLD_TOKEN` = 旧版 token（`oapi.dingtalk.com` 用），获取方式`bash scripts/dt_helper.sh --old-token`
 
 ---
 
