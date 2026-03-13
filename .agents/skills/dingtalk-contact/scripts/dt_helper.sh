@@ -190,6 +190,7 @@ cmd_old_token() {
 
   resp=$(curl -s "https://oapi.dingtalk.com/gettoken?appkey=${app_key}&appsecret=${app_secret}")
   token=$(echo "$resp" | grep -o '"access_token":"[^"]*"' | cut -d'"' -f4)
+  expires_in=$(echo "$resp" | grep -o '"expires_in":[0-9]*' | cut -d: -f2)
 
   if [ -z "$token" ]; then
     echo "❌ 获取旧版 token 失败: $resp" >&2
@@ -197,7 +198,7 @@ cmd_old_token() {
   fi
 
   cfg_set DINGTALK_OLD_TOKEN "$token"
-  cfg_set DINGTALK_OLD_TOKEN_EXPIRY "$((now + 7000))"
+  cfg_set DINGTALK_OLD_TOKEN_EXPIRY "$((now + expires_in - 200))"
 
   echo "$token"
 }
