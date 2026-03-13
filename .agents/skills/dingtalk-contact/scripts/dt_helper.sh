@@ -55,6 +55,8 @@ Token 管理（两种 token 互不兼容，按域名区分）：
     DINGTALK_MY_OPERATOR_ID       操作者 unionId（由 --to-unionid 自动生成）
     DINGTALK_ACCESS_TOKEN      新版 token 缓存
     DINGTALK_TOKEN_EXPIRY      新版 token 过期时间戳（Unix 秒）
+    DINGTALK_OLD_TOKEN         旧版 token 缓存
+    DINGTALK_OLD_TOKEN_EXPIRY  旧版 token 过期时间戳（Unix 秒）
 
 EOF
 }
@@ -172,10 +174,19 @@ cmd_old_token() {
   #   - 群消息、工作通知、互动卡片（dingtalk-message）
   #   - userId ↔ unionId 转换
   # ⚠️  不可用于 api.dingtalk.com 接口（待办、文档、AI表格等）
-  local app_key app_secret resp token
+  local app_key app_secret resp token cached expiry now
 
   app_key=$(require_cfg DINGTALK_APP_KEY)
   app_secret=$(require_cfg DINGTALK_APP_SECRET)
+
+  cached=$(cfg_get DINGTALK_OLD_TOKEN)
+  expiry=$(cfg_get DINGTALK_OLD_TOKEN_EXPIRY)
+  now=$(date +%s)
+
+  if [ -n "$cached" ] && [ -n "$expiry" ] && [ "$now" -lt "$expiry" ]; then
+    echo "$cached"
+    return 0
+  fi
 
   resp=$(curl -s "https://oapi.dingtalk.com/gettoken?appkey=${app_key}&appsecret=${app_secret}")
   token=$(echo "$resp" | grep -o '"access_token":"[^"]*"' | cut -d'"' -f4)
@@ -184,6 +195,9 @@ cmd_old_token() {
     echo "❌ 获取旧版 token 失败: $resp" >&2
     exit 1
   fi
+
+  cfg_set DINGTALK_OLD_TOKEN "$token"
+  cfg_set DINGTALK_OLD_TOKEN_EXPIRY "$((now + 7000))"
 
   echo "$token"
 }
@@ -271,7 +285,7 @@ cmd_config() {
     key="${line%%=*}"
     val="${line#*=}"
     case "$key" in
-      DINGTALK_APP_SECRET|DINGTALK_ACCESS_TOKEN)
+      DINGTALK_APP_SECRET|DINGTALK_ACCESS_TOKEN|DINGTALK_OLD_TOKEN)
         echo "${key}=${val:0:6}***（已脱敏）"
         ;;
       *)
@@ -292,7 +306,7 @@ cmd_get() {
       echo "${key}=（未设置）"
     else
       case "$key" in
-        DINGTALK_APP_SECRET|DINGTALK_ACCESS_TOKEN)
+        DINGTALK_APP_SECRET|DINGTALK_ACCESS_TOKEN|DINGTALK_OLD_TOKEN)
           echo "${key}=${val:0:6}***（脱敏）"
           ;;
         *)
