@@ -58,6 +58,7 @@ dingtalk-skills/
 | `dingtalk-ai-table` | `.agents/skills/dingtalk-ai-table/` | ✅ 可用 | 钉钉 AI 表格的工作表管理、字段管理、记录增删改查 |
 | `dingtalk-message` | `.agents/skills/dingtalk-message/` | ✅ 可用 | 钉钉消息发送：Webhook 机器人、企业内部机器人单聊/群聊、工作通知 |
 | `dingtalk-todo` | `.agents/skills/dingtalk-todo/` | ✅ 可用 | 钉钉待办管理：创建、查询、更新、标记完成/撤销、删除待办任务 |
+| `dingtalk-contact` | `.agents/skills/dingtalk-contact/` | ✅ 可用 | 钉钉通讯录：按关键词搜索用户/部门、获取用户完整详情、部门树遍历、成员列表、身份转换、员工总数 |
 | `dingtalk-skill-creator` | `.agents/skills/dingtalk-skill-creator/` | ✅ 可用 | 标准化创建新钉钉技能的开发流程工具 |
 | `skill-creator` | `.agents/skills/skill-creator/` | ✅ 可用 | 技能开发框架（由 anthropics/skills 提供） |
 

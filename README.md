@@ -104,9 +104,41 @@ npx skills add breath57/dingtalk-skills@dingtalk-todo
 
 > 示例："帮我新建一个待办：下周五前完成竞品分析" → Agent 自动设置截止时间并创建任务。
 
+#### [dingtalk-contact](.agents/skills/dingtalk-contact/) — 钉钉通讯录
+
+```bash
+npx skills add breath57/dingtalk-skills@dingtalk-contact
+```
+
+| 能力 | 说明 |
+|---|---|
+| 按关键词搜索用户 | 按姓名/工号等关键词搜索，返回 userId 列表 |
+| 获取用户完整详情 | 姓名/手机/工号/职位/部门/unionId 等全字段 |
+| unionId → userId 转换 | 通过 unionId 查询对应的 userId |
+| 获取部门成员完整列表 | 按部门分页拉取全体成员详情 |
+| 获取部门成员 userId 列表 | 轻量版，仅返回 userId 列表 |
+| 按关键词搜索部门 | 按名称关键词搜索部门，返回 deptId 列表 |
+| 获取子部门列表 | 获取指定部门的直接子部门（含详情） |
+| 获取部门详情 | 名称/父部门/成员数/排序等完整信息 |
+| 获取用户部门路径 | 从叶部门到根的完整 deptId 路径 |
+| 企业员工总人数 | 统计全部/激活员工总数 |
+
+> 示例："查一下张三的手机号和所在部门" → Agent 搜索用户、获取详情并返回。
+
+| 能力 | 说明 |
+|---|---|
+| 创建待办 | 新建待办任务，支持标题、描述、截止时间、优先级 |
+| 查询待办详情 | 按 taskId 获取任务详情 |
+| 列出待办/已完成 | 分页获取用户的未完成或已完成任务列表 |
+| 更新待办 | 修改标题、描述、截止时间、优先级等 |
+| 标记完成/撤销 | 将任务标记为已完成或重新打开 |
+| 删除待办 | 删除指定待办任务 |
+
+> 示例："帮我新建一个待办：下周五前完成竞品分析" → Agent 自动设置截止时间并创建任务。
+
 ### 🗓️ 计划中
 
-`dingtalk-contact` · `dingtalk-approval` · `dingtalk-calendar` · `dingtalk-attendance` · `dingtalk-meeting`
+`dingtalk-approval` · `dingtalk-calendar` · `dingtalk-attendance` · `dingtalk-meeting`
 
 ## 快速开始
 
@@ -117,6 +149,7 @@ npx skills add breath57/dingtalk-skills@dingtalk-document
 npx skills add breath57/dingtalk-skills@dingtalk-ai-table
 npx skills add breath57/dingtalk-skills@dingtalk-message
 npx skills add breath57/dingtalk-skills@dingtalk-todo
+npx skills add breath57/dingtalk-skills@dingtalk-contact
 ```
 
 **第二步：开口说话**

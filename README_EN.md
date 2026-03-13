@@ -105,9 +105,41 @@ npx skills add breath57/dingtalk-skills@dingtalk-todo
 
 > Example: "Create a todo: finish competitive analysis by next Friday" → Agent auto-sets the due date and creates the task.
 
+#### [dingtalk-contact](.agents/skills/dingtalk-contact/) — DingTalk Directory
+
+```bash
+npx skills add breath57/dingtalk-skills@dingtalk-contact
+```
+
+| Capability | Description |
+|---|---|
+| Search users by keyword | Search by name/job number, returns userId list |
+| Get full user details | Name, mobile, job number, title, department, unionId, etc. |
+| unionId → userId lookup | Resolve userId from a given unionId |
+| List department members | Paginated full member details for a department |
+| List member userId list | Lightweight version — userId list only |
+| Search departments by keyword | Search by name, returns deptId list |
+| List sub-departments | Direct child departments with details |
+| Get department details | Name, parent dept, member count, order, etc. |
+| Get user's department path | Full deptId chain from leaf to root |
+| Total employee count | Count all or active employees in the org |
+
+> Example: "Find Zhang San's mobile number and department" → Agent searches the user, fetches details, and returns the info.
+
+| Capability | Description |
+|---|---|
+| Create todo | Create a task with title, description, due date, and priority |
+| Get todo detail | Fetch task details by taskId |
+| List todos / completed | Paginated list of undone or completed tasks |
+| Update todo | Modify title, description, due date, priority, etc. |
+| Mark done / reopen | Mark a task as complete or reopen it |
+| Delete todo | Remove a specific todo task |
+
+> Example: "Create a todo: finish competitive analysis by next Friday" → Agent auto-sets the due date and creates the task.
+
 ### 🗓️ Planned
 
-`dingtalk-contact` · `dingtalk-approval` · `dingtalk-calendar` · `dingtalk-attendance` · `dingtalk-meeting`
+`dingtalk-approval` · `dingtalk-calendar` · `dingtalk-attendance` · `dingtalk-meeting`
 
 ## Quick Start
 
@@ -118,6 +150,7 @@ npx skills add breath57/dingtalk-skills@dingtalk-document
 npx skills add breath57/dingtalk-skills@dingtalk-ai-table
 npx skills add breath57/dingtalk-skills@dingtalk-message
 npx skills add breath57/dingtalk-skills@dingtalk-todo
+npx skills add breath57/dingtalk-skills@dingtalk-contact
 ```
 
 **Step 2: Just talk**
