@@ -18,17 +18,19 @@ show_help() {
 用法: bash scripts/common/dt_helper.sh <命令> [参数]
 
 Token 管理（两种 token 互不兼容，按域名区分）：
-  --token              获取新版 accessToken（用于 api.dingtalk.com 域名的所有接口）
+  --token [--force]    获取新版 accessToken（用于 api.dingtalk.com 域名的所有接口）
                        适用：待办、文档、AI 表格等 api.dingtalk.com 域名下所有版本的接口
                        请求头：x-acs-dingtalk-access-token: <token>
                        有缓存且未过期则直接返回，否则自动刷新并缓存
+                       --force：跳过缓存，强制重新获取（token 被提前吊销时使用）
   --token-info         查看新版 token 缓存状态（是否有效、剩余有效秒数）
   --clear-token        清除缓存的新版 token（下次 --token 时强制重新获取）
-  --old-token          获取旧版 access_token（用于 oapi.dingtalk.com 域名的所有接口）
+  --old-token [--force]
+                       获取旧版 access_token（用于 oapi.dingtalk.com 域名的所有接口）
                        适用：群消息/工作通知/userId↔unionId 转换等 oapi.dingtalk.com 接口
                        不适用：api.dingtalk.com 接口（如待办、文档、AI表格）
                        ⚠️  新旧两种 token 互不兼容，混用会导致 401/403
-  --clear-old-token    清除缓存的旧版 token（下次 --old-token 时强制重新获取）
+                       --force：跳过缓存，强制重新获取（token 被提前吊销时使用）
 
 身份转换：
   --to-unionid [userId]   将 userId 转换为 unionId
@@ -108,18 +110,19 @@ require_cfg() {
 # ─────────────────────────────────────────────────────────────────────────────
 
 cmd_token() {
-  local app_key app_secret cached expiry now resp token expire_in
+  local force="${1:-}" app_key app_secret cached expiry now resp token expire_in
 
   app_key=$(require_cfg DINGTALK_APP_KEY)
   app_secret=$(require_cfg DINGTALK_APP_SECRET)
-
-  cached=$(cfg_get DINGTALK_ACCESS_TOKEN)
-  expiry=$(cfg_get DINGTALK_TOKEN_EXPIRY)
   now=$(date +%s)
 
-  if [ -n "$cached" ] && [ -n "$expiry" ] && [ "$now" -lt "$expiry" ]; then
-    echo "$cached"
-    return 0
+  if [ "$force" != "--force" ]; then
+    cached=$(cfg_get DINGTALK_ACCESS_TOKEN)
+    expiry=$(cfg_get DINGTALK_TOKEN_EXPIRY)
+    if [ -n "$cached" ] && [ -n "$expiry" ] && [ "$now" -lt "$expiry" ]; then
+      echo "$cached"
+      return 0
+    fi
   fi
 
   # 过期或无缓存，重新获取
@@ -170,29 +173,24 @@ cmd_clear_token() {
   echo "✅ 新版 Token 缓存已清除"
 }
 
-cmd_clear_old_token() {
-  cfg_del DINGTALK_OLD_TOKEN
-  cfg_del DINGTALK_OLD_TOKEN_EXPIRY
-  echo "✅ 旧版 Token 缓存已清除"
-}
-
 cmd_old_token() {
   # 旧版 access_token，用于所有 oapi.dingtalk.com 接口：
   #   - 群消息、工作通知、互动卡片（dingtalk-message）
   #   - userId ↔ unionId 转换
   # ⚠️  不可用于 api.dingtalk.com 接口（待办、文档、AI表格等）
-  local app_key app_secret resp token cached expiry now
+  local force="${1:-}" app_key app_secret resp token cached expiry now
 
   app_key=$(require_cfg DINGTALK_APP_KEY)
   app_secret=$(require_cfg DINGTALK_APP_SECRET)
-
-  cached=$(cfg_get DINGTALK_OLD_TOKEN)
-  expiry=$(cfg_get DINGTALK_OLD_TOKEN_EXPIRY)
   now=$(date +%s)
 
-  if [ -n "$cached" ] && [ -n "$expiry" ] && [ "$now" -lt "$expiry" ]; then
-    echo "$cached"
-    return 0
+  if [ "$force" != "--force" ]; then
+    cached=$(cfg_get DINGTALK_OLD_TOKEN)
+    expiry=$(cfg_get DINGTALK_OLD_TOKEN_EXPIRY)
+    if [ -n "$cached" ] && [ -n "$expiry" ] && [ "$now" -lt "$expiry" ]; then
+      echo "$cached"
+      return 0
+    fi
   fi
 
   resp=$(curl -s "https://oapi.dingtalk.com/gettoken?appkey=${app_key}&appsecret=${app_secret}")
@@ -348,7 +346,7 @@ case "$CMD" in
     show_help
     ;;
   --token)
-    cmd_token
+    cmd_token "${2:-}"
     ;;
   --token-info)
     cmd_token_info
@@ -357,10 +355,7 @@ case "$CMD" in
     cmd_clear_token
     ;;
   --old-token)
-    cmd_old_token
-    ;;
-  --clear-old-token)
-    cmd_clear_old_token
+    cmd_old_token "${2:-}"
     ;;
   --to-unionid)
     cmd_to_unionid "${2:-}"

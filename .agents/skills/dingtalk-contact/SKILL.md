@@ -51,11 +51,10 @@ DETAIL=$(curl -s -X POST "https://oapi.dingtalk.com/topapi/v2/user/get?access_to
 echo "用户详情: $DETAIL"
 ```
 
-> **Token 失效处理**：dt_helper 仅按时间缓存，无法感知 token 被提前吊销。若 API 返回 `errcode 40001`/`40014`（token 无效/过期），需手动清除缓存后重试：
+> **Token 失效处理**：dt_helper 仅按时间缓存，无法感知 token 被提前吊销。若 API 返回 `errcode 40001`/`40014`（token 无效/过期），用 `--force` 跳过缓存强制重新获取：
 > ```bash
-> bash "$HELPER" --clear-old-token   # 清除旧版 token 缓存
-> bash "$HELPER" --clear-token       # 清除新版 token 缓存
-> OLD_TOKEN=$(bash "$HELPER" --old-token)  # 重新获取
+> OLD_TOKEN=$(bash "$HELPER" --old-token --force)  # 强制重新获取旧版 token
+> NEW_TOKEN=$(bash "$HELPER" --token --force)       # 强制重新获取新版 token
 > ```
 
 ## references/api.md 查阅索引
