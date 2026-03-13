@@ -23,8 +23,8 @@ API 详情见 `references/api.md`。
 |---|---|---|
 | `DINGTALK_APP_KEY` | 钉钉应用 appKey | 开放平台 → 应用管理 → 凭证信息 |
 | `DINGTALK_APP_SECRET` | 钉钉应用 appSecret | 同上 |
-| `DINGTALK_USER_ID` | 当前用户的企业员工 ID（userId） | 管理后台 → 通讯录 → 成员管理 → 点击姓名查看（不是手机号、不是 unionId） |
-| `DINGTALK_OPERATOR_ID` | 当前用户的 unionId | 首次由脚本自动通过 userId 转换获取并写入 |
+| `DINGTALK_MY_USER_ID` | 当前用户的企业员工 ID（userId） | 管理后台 → 通讯录 → 成员管理 → 点击姓名查看（不是手机号、不是 unionId） |
+| `DINGTALK_MY_OPERATOR_ID` | 当前用户的 unionId | 首次由脚本自动通过 userId 转换获取并写入 |
 
 ### 启动流程（每次执行任务前）
 
@@ -81,7 +81,7 @@ x-acs-dingtalk-access-token: <accessToken>
 
 ### userId → unionId 自动转换
 
-当配置中有 `DINGTALK_USER_ID` 但缺少 `DINGTALK_OPERATOR_ID` 时，自动执行转换：
+当配置中有 `DINGTALK_MY_USER_ID` 但缺少 `DINGTALK_MY_OPERATOR_ID` 时，自动执行转换：
 
 ```bash
 # 1. 获取旧版 token
@@ -93,7 +93,7 @@ UNION_ID=$(curl -s -X POST "https://oapi.dingtalk.com/topapi/v2/user/get?access_
   -d "{\"userid\":\"${USER_ID}\"}" | grep -o '"unionid":"[^"]*"' | cut -d'"' -f4)
 
 # 3. 写入配置文件
-echo "DINGTALK_OPERATOR_ID=$UNION_ID" >> ~/.dingtalk-skills/config
+echo "DINGTALK_MY_OPERATOR_ID=$UNION_ID" >> ~/.dingtalk-skills/config
 ```
 
 > ⚠️ 注意：返回体中 `result.unionid`（无下划线）有值，`result.union_id`（有下划线）可能为空。

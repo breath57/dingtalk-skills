@@ -25,8 +25,8 @@ description: 钉钉待办管理。当用户提到"钉钉待办"、"待办任务"
 |---|---|---|
 | `DINGTALK_APP_KEY` | 应用 AppKey | 钉钉开放平台 → 应用管理 → 凭证信息 |
 | `DINGTALK_APP_SECRET` | 应用 AppSecret | 同上 |
-| `DINGTALK_USER_ID` | 当前用户的企业员工 ID（userId） | 管理后台 → 通讯录 → 成员管理 → 点击姓名查看（不是手机号、不是 unionId） |
-| `DINGTALK_OPERATOR_ID` | 当前用户的 unionId | 首次由脚本自动通过 userId 转换获取并写入 |
+| `DINGTALK_MY_USER_ID` | 当前用户的企业员工 ID（userId） | 管理后台 → 通讯录 → 成员管理 → 点击姓名查看（不是手机号、不是 unionId） |
+| `DINGTALK_MY_OPERATOR_ID` | 当前用户的 unionId | 首次由脚本自动通过 userId 转换获取并写入 |
 
 ### 身份标识说明
 
@@ -55,7 +55,7 @@ UNION_ID=$(curl -s -X POST "https://oapi.dingtalk.com/topapi/v2/user/get?access_
   -d "{\"userid\":\"${USER_ID}\"}" | grep -o '"unionid":"[^"]*"' | cut -d'"' -f4)
 
 # 3. 写入配置文件
-echo "DINGTALK_OPERATOR_ID=$UNION_ID" >> ~/.dingtalk-skills/config
+echo "DINGTALK_MY_OPERATOR_ID=$UNION_ID" >> ~/.dingtalk-skills/config
 ```
 
 > ⚠️ 注意：返回体中 `result.unionid`（无下划线）有值，`result.union_id`（有下划线）可能为空。
@@ -72,7 +72,7 @@ set -e
 CONFIG=~/.dingtalk-skills/config
 APP_KEY=$(grep '^DINGTALK_APP_KEY=' "$CONFIG" | cut -d= -f2-)
 APP_SECRET=$(grep '^DINGTALK_APP_SECRET=' "$CONFIG" | cut -d= -f2-)
-USER_ID=$(grep '^DINGTALK_USER_ID=' "$CONFIG" | cut -d= -f2-)
+USER_ID=$(grep '^DINGTALK_MY_USER_ID=' "$CONFIG" | cut -d= -f2-)
 
 # 新版 Token 缓存（用于待办 API）
 CACHED_TOKEN=$(grep '^DINGTALK_ACCESS_TOKEN=' "$CONFIG" 2>/dev/null | cut -d= -f2-)
@@ -91,13 +91,13 @@ else
 fi
 
 # unionId：优先从配置读取，未存储时自动从 userId 转换并写入
-UNION_ID=$(grep '^DINGTALK_OPERATOR_ID=' "$CONFIG" 2>/dev/null | cut -d= -f2-)
+UNION_ID=$(grep '^DINGTALK_MY_OPERATOR_ID=' "$CONFIG" 2>/dev/null | cut -d= -f2-)
 if [ -z "$UNION_ID" ]; then
   OLD_TOKEN=$(curl -s "https://oapi.dingtalk.com/gettoken?appkey=${APP_KEY}&appsecret=${APP_SECRET}" | grep -o '"access_token":"[^"]*"' | cut -d'"' -f4)
   UNION_ID=$(curl -s -X POST "https://oapi.dingtalk.com/topapi/v2/user/get?access_token=${OLD_TOKEN}" \
     -H 'Content-Type: application/json' \
     -d "{\"userid\":\"${USER_ID}\"}" | grep -o '"unionid":"[^"]*"' | cut -d'"' -f4)
-  echo "DINGTALK_OPERATOR_ID=$UNION_ID" >> "$CONFIG"
+  echo "DINGTALK_MY_OPERATOR_ID=$UNION_ID" >> "$CONFIG"
 fi
 
 # 在此追加具体 API 调用，例如创建待办：
