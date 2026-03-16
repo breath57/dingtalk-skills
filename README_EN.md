@@ -17,6 +17,16 @@ Built on the [Anthropic skills spec](https://github.com/anthropics/skills), with
 - **Configure once, use everywhere**: On first run, the agent collects appKey/appSecret/operatorId in a single prompt, saves to `~/.dingtalk-skills/config`, and reuses across all skills automatically
 - **Production-ready from day one**: Full CRUD coverage for DingTalk's most-used document and table APIs, with live tests verifying every endpoint
 
+## Long-term Goals
+
+This project pursues two parallel long-term objectives:
+
+**1. Always only `curl`**
+No SDKs, no runtimes, no third-party dependencies — ever. If the system has `curl`, the skill runs. This guarantees maximum portability and zero-install operation in any agent environment.
+
+**2. Push token cost to the absolute minimum**
+Every task execution loads skill files into the agent's context window — **the skill file itself is a cost**. Our goal isn't just correctness; it's writing `SKILL.md` and `references/api.md` as concisely as possible while maintaining full accuracy. Strip every redundant explanation. Express complete semantics with the shortest possible instructions. Every token must earn its place.
+
 ## Skills
 
 ### ✅ Available
