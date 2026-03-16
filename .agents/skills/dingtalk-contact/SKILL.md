@@ -6,11 +6,20 @@ description: 钉钉通讯录与联系人查询。当用户提到"钉钉通讯录
 # 钉钉通讯录技能
 负责钉钉通讯录的所有查询操作。本文件为**策略指南**，仅包含决策逻辑和工作流程。完整 API 请求格式见文末「references/api.md 查阅索引」。
 
+> `dt_helper.sh` 位于本 `SKILL.md` 同级目录的 `scripts/dt_helper.sh`。
+
 ## 工作流程（每次执行前）
-1. **读取/写入配置** → 通过 `scripts/dt_helper.sh` 管理，配置跨会话保留，无需重复询问
-2. **仅收集缺失配置** → 若缺少某项，**一次性询问用户**所有缺失的值，用 `bash scripts/dt_helper.sh --set KEY=VALUE` 写入
-3. **获取 Token** → 直接调用 `dt_helper.sh` 即可，token 如何获取/缓存无需关注
-4. **执行操作** → 凡是包含变量替换、管道或多行逻辑的命令，写入 `/tmp/<task>.sh` 再 `bash /tmp/<task>.sh` 执行。不要把多行命令直接粘到终端里（终端工具会截断），也不要用 `<<'EOF'` 语法（heredoc 在工具中同样会被截断导致变量丢失）
+1. **先识别本次任务类型** → 例如：搜索用户、查用户详情、搜索部门、列部门成员、查部门路径、统计员工数
+2. **按本次任务校验所需配置** → 通过 `bash scripts/dt_helper.sh --get KEY` 读取；仅校验本任务必须项
+3. **仅收集缺失配置** → 若缺少某项，**一次性询问用户**所有缺失值，用 `bash scripts/dt_helper.sh --set KEY=VALUE` 写入
+4. **获取 Token** → 直接调用 `bash scripts/dt_helper.sh`
+5. **执行操作** → 复杂的创建临时文件再执行，简单的直接执行；禁止 heredoc
+
+### 按任务校验配置（必须先做）
+- **所有任务通用必需**：`DINGTALK_APP_KEY`、`DINGTALK_APP_SECRET`
+- **需要“以当前操作者为起点”或“直接读取本人身份信息”的任务**：必须有 `DINGTALK_MY_USER_ID`
+
+> 规则：未通过“本次任务配置校验”前，不得进入 API 调用步骤。
 
 > 凭证禁止在输出中完整打印，确认时仅显示前 4 位 + `****`
 
@@ -25,13 +34,13 @@ description: 钉钉通讯录与联系人查询。当用户提到"钉钉通讯录
 | 标识 | 说明 |
 |---|---|
 | `userId`（= `staffId`） | 企业内部员工 ID，可通过通过管理后台 -> 通讯录 -> 成员管理 -> 点击姓名查看 |
-| `unionId` | 跨企业/跨应用唯一标识，可通过`bash scripts/dt_helper.sh --to-unionid <userid>` 获取 |
+| `unionId` | 跨企业/跨应用唯一标识，可通过 `bash scripts/dt_helper.sh --to-unionid <userid>` 获取 |
 
 ### 执行脚本模板
 ```bash
 #!/bin/bash
 set -e
-HELPER="<THE_SKILLMD_FILE_PATH>/scripts/dt_helper.sh"
+HELPER="./scripts/dt_helper.sh"
 NEW_TOKEN=$(bash "$HELPER" --token)       # api.dingtalk.com 接口用
 OLD_TOKEN=$(bash "$HELPER" --old-token)   # oapi.dingtalk.com 接口用
 # USER_ID=$(bash "$HELPER" --get DINGTALK_MY_USER_ID)  # 以当前操作用户为起点时启用
