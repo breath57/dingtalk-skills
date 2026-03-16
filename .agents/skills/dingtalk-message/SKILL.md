@@ -257,31 +257,14 @@ JSON 字段提取：`grep -o '"key":"[^"]*"' | cut -d'"' -f4`
 确定好要做什么之后，用以下命令从 `references/api.md` 中提取对应章节的完整 API 细节（请求格式、参数表、返回值示例）：
 
 ```bash
-# Webhook 所有消息格式 + 加签计算（196 行）
 grep -A 196 "^## 一、群自定义 Webhook 机器人" references/api.md
-
-# 仅加签计算（19 行）
 grep -A 19 "^### 加签计算" references/api.md
-
-# 机器人单聊 / 群聊 / 撤回 / 已读 / 身份标识（192 行）
 grep -A 192 "^## 二、企业内部应用机器人" references/api.md
-
-# 仅身份标识体系 / userId / unionId（36 行）
 grep -A 36 "^#### 钉钉身份标识体系" references/api.md
-
-# 仅 msgKey & msgParam 消息类型表（16 行）
 grep -A 16 "^### 消息类型" references/api.md
-
-# 工作通知发送 / 查询 / 撤回（145 行）
 grep -A 145 "^## 三、工作通知" references/api.md
-
-# sessionWebhook + 回调消息体（60 行）
 grep -A 60 "^## 四、sessionWebhook" references/api.md
-
-# 错误码（33 行）
 grep -A 33 "^## 错误码" references/api.md
-
-# 仅某个子章节（将标题替换即可）
 grep -A 30 "^#### 文本消息" references/api.md
 grep -A 30 "^### 批量发送单聊消息" references/api.md
 grep -A 30 "^### 发送工作通知" references/api.md
