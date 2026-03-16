@@ -264,7 +264,7 @@ uv run pytest dingtalk-<skill-name>/test_<module>.py -v
 - **身份标识说明**：userId vs unionId 的区别，说明该技能的 API 使用哪种 ID，以及自动转换逻辑
 - **执行脚本模板**：完整 bash 脚本（`create_file /tmp/<task>.sh` 再 `bash` 执行，禁止 heredoc），调用 `scripts/dt_helper.sh` 获取 token 和 unionId，无需内联 token 缓存或 id 转换逻辑：
   ```bash
-  HELPER="$(cd "$(dirname "$0")/.." && pwd)/scripts/dt_helper.sh"
+    HELPER="<THE_SKILLMD_FILE_PATH>/scripts/dt_helper.sh"
   TOKEN=$(bash "$HELPER" --token)                    # 新版 token（带缓存）
   UNION_ID=$(bash "$HELPER" --to-unionid)            # 自动转换，如 API 需要 userId 则用 --get DINGTALK_MY_USER_ID
   USER_ID=$(bash "$HELPER" --get DINGTALK_MY_USER_ID)

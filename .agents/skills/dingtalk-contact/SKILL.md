@@ -31,7 +31,7 @@ description: 钉钉通讯录与联系人查询。当用户提到"钉钉通讯录
 ```bash
 #!/bin/bash
 set -e
-HELPER="<THE_FILE_PATH>/scripts/dt_helper.sh"
+HELPER="<THE_SKILLMD_FILE_PATH>/scripts/dt_helper.sh"
 NEW_TOKEN=$(bash "$HELPER" --token)       # api.dingtalk.com 接口用
 OLD_TOKEN=$(bash "$HELPER" --old-token)   # oapi.dingtalk.com 接口用
 # USER_ID=$(bash "$HELPER" --get DINGTALK_MY_USER_ID)  # 以当前操作用户为起点时启用
