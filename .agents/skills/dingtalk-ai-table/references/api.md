@@ -1,26 +1,22 @@
-# 钉钉 AI 表格 API 参考
+# dingtalk-ai-table API 参考
 
-> **重要：** 钉钉 AI 表格（`.able` 文件）使用 **Notable API**，  
-> 路径前缀为 `/v1.0/notable`，与普通电子表格 API（`/v1.0/doc/workbooks`）完全不同。
-
-基础地址：`https://api.dingtalk.com/v1.0/notable`
-
-认证：
-- 请求头：`x-acs-dingtalk-access-token: <accessToken>`
-- 所有接口均需查询参数：`operatorId=<用户 unionId>`
-
-`{base_id}` = AI 表格文件的 **nodeId**（从分享链接 `/nodes/<nodeId>` 提取）
+> 所有接口均已验证可用。钉钉 AI 表格（`.able` 文件）使用 **Notable API**，与普通电子表格 API 完全不同。
+> `NEW_TOKEN` = 新版 token（`api.dingtalk.com` 用），获取方式 `bash scripts/dt_helper.sh --token`
+> `OPERATOR_ID` = 用户 unionId，获取方式 `bash scripts/dt_helper.sh --get DINGTALK_MY_OPERATOR_ID`
+> `{base_id}` = AI 表格文件的 nodeId（从分享链接 `/nodes/<nodeId>` 提取）
 
 ---
 
-## 工作表（Sheet）
+## 1. 列出工作表
 
-### 查询所有工作表
 ```
-GET /notable/bases/{base_id}/sheets?operatorId={operatorId}
+GET https://api.dingtalk.com/v1.0/notable/bases/{base_id}/sheets?operatorId={OPERATOR_ID}
+Header: x-acs-dingtalk-access-token: {NEW_TOKEN}
 ```
 
-返回示例：
+无请求体。
+
+响应：
 ```json
 {
   "value": [
@@ -32,23 +28,31 @@ GET /notable/bases/{base_id}/sheets?operatorId={operatorId}
 
 ---
 
-### 查询单个工作表
+## 2. 查询单个工作表
+
 ```
-GET /notable/bases/{base_id}/sheets/{sheet_id}?operatorId={operatorId}
+GET https://api.dingtalk.com/v1.0/notable/bases/{base_id}/sheets/{sheet_id}?operatorId={OPERATOR_ID}
+Header: x-acs-dingtalk-access-token: {NEW_TOKEN}
 ```
 
-返回示例：
+无请求体。
+
+响应：
 ```json
 { "id": "HAcL4SD", "name": "项目" }
 ```
 
 ---
 
-### 创建工作表
-```
-POST /notable/bases/{base_id}/sheets?operatorId={operatorId}
-Content-Type: application/json
+## 3. 创建工作表
 
+```
+POST https://api.dingtalk.com/v1.0/notable/bases/{base_id}/sheets?operatorId={OPERATOR_ID}
+Header: x-acs-dingtalk-access-token: {NEW_TOKEN}
+```
+
+请求体：
+```json
 {
   "name": "新工作表",
   "fields": [
@@ -58,28 +62,43 @@ Content-Type: application/json
 }
 ```
 
-`fields` 为可选，省略则创建空工作表。  
-返回：`{ "id": "zHTWNlh", "name": "新工作表" }`
+| 参数 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `name` | string | ✅ | 工作表名称 |
+| `fields` | array | ❌ | 初始字段定义，省略则创建空工作表 |
+
+响应：
+```json
+{ "id": "zHTWNlh", "name": "新工作表" }
+```
 
 ---
 
-### 删除工作表
+## 4. 删除工作表
+
 ```
-DELETE /notable/bases/{base_id}/sheets/{sheet_id}?operatorId={operatorId}
+DELETE https://api.dingtalk.com/v1.0/notable/bases/{base_id}/sheets/{sheet_id}?operatorId={OPERATOR_ID}
+Header: x-acs-dingtalk-access-token: {NEW_TOKEN}
 ```
 
-返回：`{ "success": true }`
+无请求体。
+
+响应：`{ "success": true }`
+
+> ⚠️ 不可恢复，执行前需用户确认。
 
 ---
 
-## 字段（Field）
+## 5. 列出字段
 
-### 查询所有字段
 ```
-GET /notable/bases/{base_id}/sheets/{sheet_id}/fields?operatorId={operatorId}
+GET https://api.dingtalk.com/v1.0/notable/bases/{base_id}/sheets/{sheet_id}/fields?operatorId={OPERATOR_ID}
+Header: x-acs-dingtalk-access-token: {NEW_TOKEN}
 ```
 
-返回示例：
+无请求体。
+
+响应：
 ```json
 {
   "value": [
@@ -92,19 +111,27 @@ GET /notable/bases/{base_id}/sheets/{sheet_id}/fields?operatorId={operatorId}
 
 ---
 
-### 创建字段
-```
-POST /notable/bases/{base_id}/sheets/{sheet_id}/fields?operatorId={operatorId}
-Content-Type: application/json
+## 6. 创建字段
 
+```
+POST https://api.dingtalk.com/v1.0/notable/bases/{base_id}/sheets/{sheet_id}/fields?operatorId={OPERATOR_ID}
+Header: x-acs-dingtalk-access-token: {NEW_TOKEN}
+```
+
+请求体：
+```json
 {
   "name": "字段名称",
   "type": "number"
 }
 ```
 
-常用 `type` 值：`text`、`number`、`date`  
-返回示例：
+| 参数 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `name` | string | ✅ | 字段名称 |
+| `type` | string | ✅ | 字段类型：`text`（文本）、`number`（数字）、`date`（日期） |
+
+响应：
 ```json
 {
   "id": "mr8APlG",
@@ -116,34 +143,48 @@ Content-Type: application/json
 
 ---
 
-### 更新字段
-```
-PUT /notable/bases/{base_id}/sheets/{sheet_id}/fields/{field_id}?operatorId={operatorId}
-Content-Type: application/json
+## 7. 更新字段
 
+```
+PUT https://api.dingtalk.com/v1.0/notable/bases/{base_id}/sheets/{sheet_id}/fields/{field_id}?operatorId={OPERATOR_ID}
+Header: x-acs-dingtalk-access-token: {NEW_TOKEN}
+```
+
+请求体：
+```json
 { "name": "新字段名称" }
 ```
 
-返回：`{ "id": "fieldId" }`（仅返回 id，通过 GET /fields 确认名称变更）
+响应：`{ "id": "fieldId" }`
+
+> 仅返回 id，通过重新查询字段列表确认名称已变更。
 
 ---
 
-### 删除字段
+## 8. 删除字段
+
 ```
-DELETE /notable/bases/{base_id}/sheets/{sheet_id}/fields/{field_id}?operatorId={operatorId}
+DELETE https://api.dingtalk.com/v1.0/notable/bases/{base_id}/sheets/{sheet_id}/fields/{field_id}?operatorId={OPERATOR_ID}
+Header: x-acs-dingtalk-access-token: {NEW_TOKEN}
 ```
 
-返回：`{ "success": true }`
+无请求体。
+
+响应：`{ "success": true }`
+
+> ⚠️ 删除字段会同时删除该列所有数据，执行前需用户确认。
 
 ---
 
-## 记录（Record）
+## 9. 新增记录
 
-### 新增记录
 ```
-POST /notable/bases/{base_id}/sheets/{sheet_id}/records?operatorId={operatorId}
-Content-Type: application/json
+POST https://api.dingtalk.com/v1.0/notable/bases/{base_id}/sheets/{sheet_id}/records?operatorId={OPERATOR_ID}
+Header: x-acs-dingtalk-access-token: {NEW_TOKEN}
+```
 
+请求体：
+```json
 {
   "records": [
     { "fields": { "标题": "任务一", "数量": 3 } },
@@ -152,8 +193,9 @@ Content-Type: application/json
 }
 ```
 
-`fields` 中使用**字段名称**（非 ID）作为键。  
-返回示例：
+> `fields` 中使用**字段名称**（非 ID）作为键。先用「5. 列出字段」确认现有字段名。
+
+响应：
 ```json
 {
   "value": [
@@ -165,18 +207,27 @@ Content-Type: application/json
 
 ---
 
-### 查询记录列表
-```
-POST /notable/bases/{base_id}/sheets/{sheet_id}/records/list?operatorId={operatorId}
-Content-Type: application/json
+## 10. 查询记录列表
 
+```
+POST https://api.dingtalk.com/v1.0/notable/bases/{base_id}/sheets/{sheet_id}/records/list?operatorId={OPERATOR_ID}
+Header: x-acs-dingtalk-access-token: {NEW_TOKEN}
+```
+
+请求体：
+```json
 {
   "maxResults": 20,
   "nextToken": ""
 }
 ```
 
-返回示例：
+| 参数 | 类型 | 必填 | 说明 |
+|---|---|---|---|
+| `maxResults` | int | ❌ | 每页数量，默认 20 |
+| `nextToken` | string | ❌ | 分页令牌，首次为空 |
+
+响应：
 ```json
 {
   "records": [
@@ -184,9 +235,9 @@ Content-Type: application/json
       "id": "RNXU1Vm2L2",
       "fields": { "标题": "任务一", "数量": 3 },
       "createdTime": 1772723541439,
-      "createdBy": { "unionId": "K1mxiiGFgkVfWYR5tNM04lAiEiE" },
+      "createdBy": { "unionId": "xxx" },
       "lastModifiedTime": 1772723541439,
-      "lastModifiedBy": { "unionId": "K1mxiiGFgkVfWYR5tNM04lAiEiE" }
+      "lastModifiedBy": { "unionId": "xxx" }
     }
   ],
   "hasMore": false,
@@ -194,15 +245,19 @@ Content-Type: application/json
 }
 ```
 
-翻页：当 `hasMore=true` 时，将 `nextToken` 传入下次请求继续获取。
+> 翻页：`hasMore=true` 时，将 `nextToken` 传入下次请求继续获取。
 
 ---
 
-### 更新记录
-```
-PUT /notable/bases/{base_id}/sheets/{sheet_id}/records?operatorId={operatorId}
-Content-Type: application/json
+## 11. 更新记录
 
+```
+PUT https://api.dingtalk.com/v1.0/notable/bases/{base_id}/sheets/{sheet_id}/records?operatorId={OPERATOR_ID}
+Header: x-acs-dingtalk-access-token: {NEW_TOKEN}
+```
+
+请求体：
+```json
 {
   "records": [
     { "id": "RNXU1Vm2L2", "fields": { "标题": "新标题" } }
@@ -210,20 +265,25 @@ Content-Type: application/json
 }
 ```
 
-只传需要修改的字段，未传字段保持不变。  
-返回：`{ "value": [{ "id": "RNXU1Vm2L2" }] }`
+> 只传需要修改的字段，未传字段保持不变。
+
+响应：`{ "value": [{ "id": "RNXU1Vm2L2" }] }`
 
 ---
 
-### 删除记录
-```
-POST /notable/bases/{base_id}/sheets/{sheet_id}/records/delete?operatorId={operatorId}
-Content-Type: application/json
+## 12. 删除记录
 
+```
+POST https://api.dingtalk.com/v1.0/notable/bases/{base_id}/sheets/{sheet_id}/records/delete?operatorId={OPERATOR_ID}
+Header: x-acs-dingtalk-access-token: {NEW_TOKEN}
+```
+
+请求体：
+```json
 { "recordIds": ["RNXU1Vm2L2", "LK0kdIxCQU"] }
 ```
 
-返回：`{ "success": true }`
+响应：`{ "success": true }`
 
 ---
 
