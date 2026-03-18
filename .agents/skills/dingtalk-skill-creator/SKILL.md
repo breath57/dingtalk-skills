@@ -67,58 +67,105 @@ sed -n '<start>,<end>p' $SDK_BASE/models.py
 
 SDK 文档不一定准确，**必须用真实请求探测** 实际返回的字段名。
 
+> ⚠️ **探测阶段必须使用 SDK，禁止用 `requests` 直接发 HTTP 请求。**  
+> 探测的目的是学习 SDK 的实际行为和字段结构，用 SDK 才能同时验证接口可调用性和字段名。  
+> `requests` 裸请求留给阶段三（纯 HTTP 测试），探测阶段不得提前引入。
+
 **获取 token 和 unionId（用 dt_helper.sh）：**
 
 ```bash
 # 在 skill 根目录或 tests/ 目录下
-TOKEN=$(bash scripts/dt_helper.sh --token)       # 新版 token，带缓存
+TOKEN=$(bash scripts/dt_helper.sh --token)          # 新版 token，带缓存
 UNION_ID=$(bash scripts/dt_helper.sh --to-unionid)  # 自动从 DINGTALK_MY_USER_ID 转换
 ```
 
-**探测脚本（用获取到的 token/uid 发请求）：**
+**探测脚本（用 SDK 调用）：**
 
 ```python
 # 在 tests/ 目录下运行（已有 .env 和 venv）
-import os, pathlib, requests
+import os, pathlib, subprocess
+from alibabacloud_dingtalk.<module>_1_0 import client as dt_client, models as dt_models
+from alibabacloud_tea_openapi import models as open_api_models
+from alibabacloud_tea_util import models as util_models
+
+# 读取 .env
 env = pathlib.Path(".env").read_text()
 for line in env.splitlines():
     line = line.strip()
     if line and not line.startswith("#") and "=" in line:
         k, _, v = line.partition("="); os.environ.setdefault(k.strip(), v.strip())
 
-# 直接从环境变量读取（由 dt_helper.sh 或 .env 提供）
-token = os.environ["DINGTALK_ACCESS_TOKEN"]  # 或直接 TOKEN=$(dt_helper --token) 后传入
-uid = os.environ.get("OPERATOR_ID", "")      # OPERATOR_ID = unionId，来自 .env
+# 获取 token（调 dt_helper.sh）
+token = subprocess.check_output(
+    ["bash", "../scripts/common/dt_helper.sh", "--token"], text=True).strip()
+union_id = os.environ["DINGTALK_MY_OPERATOR_ID"]
 
-headers = {"x-acs-dingtalk-access-token": token, "Content-Type": "application/json"}
+# SDK 客户端
+cfg = open_api_models.Config(protocol="HTTPS", endpoint="api.dingtalk.com")
+client = dt_client.Client(cfg)
+runtime = util_models.RuntimeOptions()
 
-# CREATE → 探测实际响应字段
-r = requests.post(f"https://api.dingtalk.com/v1.0/xxx/users/{uid}/items",
-    params={"operatorId": uid}, headers=headers, json={"subject": "[probe] 探测"})
-print("CREATE:", r.json())
-# 根据实际输出确定 id 字段名（可能是 id, taskId, itemId 等）
+# CREATE 探测 → 打印实际响应字段
+h = dt_models.CreateXxxHeaders()
+h.x_acs_dingtalk_access_token = token
+req = dt_models.CreateXxxRequest(subject="[probe] 探测")
+resp = client.create_xxx_with_options(union_id, req, h, runtime)
+print("CREATE body:", vars(resp.body))
+# 根据 print 输出确定实际字段名
 ```
 
 整理成接口清单表格后继续。
 
-### 1.5 查阅 API 文档，记录所需权限（重要！）
+### 1.5 探测并开通所需权限（重要！）
 
-**在写第一行测试代码之前**，先到钉钉开放平台文档查清该 API 需要哪些权限点，并在开发者后台添加好。  
-未添加权限时 API 会返回 `403 Forbidden`，会浪费大量调试时间。
+**推荐方式（比查文档更快）**：直接用 SDK 对每个目标接口发一次"干跑"请求，从 403 响应体的 `requiredScopes` 字段批量收集所需权限点，比逐个查文档更准确。
 
+```python
+# tests/probe_<skill>_perms.py（写到 tests/ 目录下，不要写到 /tmp/）
+import os, pathlib, subprocess, re, time
+from alibabacloud_dingtalk.<module>_1_0 import client as dt_client, models as dt_models
+from alibabacloud_tea_openapi import models as open_api_models
+from alibabacloud_tea_util import models as util_models
+
+env_path = pathlib.Path(__file__).parent / ".env"
+for line in env_path.read_text().splitlines():
+    line = line.strip()
+    if line and not line.startswith("#") and "=" in line:
+        k, _, v = line.partition("="); os.environ.setdefault(k.strip(), v.strip())
+
+token = subprocess.check_output(
+    ["bash", str(pathlib.Path(__file__).parent.parent / "scripts/common/dt_helper.sh"), "--token"],
+    text=True).strip()
+user_id = os.environ["DINGTALK_MY_USER_ID"]
+
+cfg = open_api_models.Config(protocol="HTTPS", endpoint="api.dingtalk.com")
+client = dt_client.Client(cfg)
+runtime = util_models.RuntimeOptions()
+
+def h(cls):
+    obj = cls(); obj.x_acs_dingtalk_access_token = token; return obj
+
+cases = [
+    ("接口名1", lambda: client.create_xxx_with_options(..., h(dt_models.CreateXxxHeaders), runtime)),
+    ("接口名2", lambda: client.get_xxx_with_options(..., h(dt_models.GetXxxHeaders), runtime)),
+]
+
+for name, fn in cases:
+    try:
+        fn(); print(f"[OK]  {name}")
+    except Exception as e:
+        msg = str(e)
+        scopes = re.findall(r"'[\w.]+(?:Read|Write)'", msg)
+        if "403" in msg:
+            print(f"[403] {name}  →  需要权限: {', '.join(scopes) or msg[:120]}")
+        else:
+            print(f"[ERR] {name}  →  {msg[:120]}")
 ```
-步骤：
-1. 访问 https://open.dingtalk.com/document/ 搜索目标 API 名称
-2. 找到文档页的「权限」或「鉴权」章节（通常在页面底部）
-3. 记录所有必需权限点，例如：
-   - Todo.Todo.Write
-   - Contact.User.Read
-   - 通讯录只读权限
-4. 进入「开发者后台 → 应用权限管理」，添加权限并发版
-5. 将权限清单写入 references/api.md 的「所需权限」章节
-```
 
-> 如果测试中仍然遇到 403，先查响应的 `message` 字段——钉钉通常会明确提示缺少哪个权限点名称。
+收集到所有权限点后，进入「开发者后台 → 应用权限管理」开通，发版后重跑确认 OK，再继续阶段二。  
+将最终权限清单写入 `references/api.md` 的「所需应用权限」章节。
+
+> 探测时传入"明显无效"的参数（如 `process_code="PROC-000000"`）即可，目的只是触发 403 拿到 `requiredScopes`，不在乎业务逻辑是否正确。
 
 ---
 
