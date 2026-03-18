@@ -141,6 +141,8 @@ npx skills add breath57/dingtalk-skills@dingtalk-contact
 
 #### [dingtalk-ai-web-search](.agents/skills/dingtalk-ai-web-search/) — 网页搜索
 
+🦞 [ClawHub · dingtalk-ai-web-search](https://clawhub.ai/breath57/dingtalk-ai-web-search)
+
 ```bash
 npx skills add breath57/dingtalk-skills@dingtalk-ai-web-search
 ```
