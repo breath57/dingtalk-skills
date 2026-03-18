@@ -140,6 +140,21 @@ npx skills add breath57/dingtalk-skills@dingtalk-contact
 
 > Example: "Find Zhang San's mobile number and department" → Agent searches the user, fetches details, and returns the info.
 
+#### [dingtalk-ai-web-search](.agents/skills/dingtalk-ai-web-search/) — Web Search
+
+```bash
+npx skills add breath57/dingtalk-skills@dingtalk-ai-web-search
+```
+
+| Capability | Description |
+|---|---|
+| Keyword search | Search public web content, returns title, URL, and snippet |
+| Time range filter | Limit results to: one day / one week / one month / one year |
+| Custom result count | Specify number of results (default: 5) |
+| JSON output | Structured output for programmatic processing |
+
+> Example: "Search for Python asyncio best practices" → Agent searches and returns the latest result summaries.
+
 ### 🗓️ Planned
 
 `dingtalk-approval` · `dingtalk-calendar` · `dingtalk-attendance` · `dingtalk-meeting`
@@ -154,6 +169,7 @@ npx skills add breath57/dingtalk-skills@dingtalk-ai-table
 npx skills add breath57/dingtalk-skills@dingtalk-message
 npx skills add breath57/dingtalk-skills@dingtalk-todo
 npx skills add breath57/dingtalk-skills@dingtalk-contact
+npx skills add breath57/dingtalk-skills@dingtalk-ai-web-search
 ```
 
 **Step 2: Just talk**
