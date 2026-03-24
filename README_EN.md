@@ -157,9 +157,25 @@ npx skills add breath57/dingtalk-skills@dingtalk-ai-web-search
 
 > Example: "Search for Python asyncio best practices" → Agent searches and returns the latest result summaries.
 
+#### [dingtalk-calendar](.agents/skills/dingtalk-calendar/) — Calendar & Schedule
+
+🦞 [ClawHub · dingtalk-calendar](https://clawhub.ai/breath57/dingtalk-calendar)
+
+```bash
+npx skills add breath57/dingtalk-skills@dingtalk-calendar
+```
+
+| Capability | Description |
+|---|---|
+| Create / update / delete events | Events under `primary` calendar |
+| Get event & list by time range | Single event by id; paginated list |
+| Free/busy query | querySchedule for unionIds |
+
+> Example: "Add a 1h meeting tomorrow at 3pm titled Review" → Agent builds ISO8601 times and creates the event.
+
 ### 🗓️ Planned
 
-`dingtalk-approval` · `dingtalk-calendar` · `dingtalk-attendance` · `dingtalk-meeting`
+`dingtalk-approval` · `dingtalk-attendance` · `dingtalk-meeting`
 
 ## Quick Start
 
@@ -172,6 +188,7 @@ npx skills add breath57/dingtalk-skills@dingtalk-message
 npx skills add breath57/dingtalk-skills@dingtalk-todo
 npx skills add breath57/dingtalk-skills@dingtalk-contact
 npx skills add breath57/dingtalk-skills@dingtalk-ai-web-search
+npx skills add breath57/dingtalk-skills@dingtalk-calendar
 ```
 
 **Step 2: Just talk**
