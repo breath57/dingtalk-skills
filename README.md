@@ -169,6 +169,9 @@ npx skills add breath57/dingtalk-skills@dingtalk-calendar
 | 创建/更新/删除日程 | 主日历 `primary` 下创建会议、修改标题与时间、删除事件 |
 | 查询日程详情与列表 | 按事件 ID 查询；按时间窗分页列出日程 |
 | 查询闲忙 | 对指定 unionId 列表查询忙闲（querySchedule） |
+| 视频会议 / 会议室 | 钉钉视频会议；会议室忙闲查询；日程上添加会议室（需 roomId） |
+| 签到 / 签退 | 获取签到与签退链接；API 签到、签退（见 api.md） |
+| 循环日程 | 创建时带 `recurrence`；订阅日历需额外权限 |
 
 > 示例："明天下午三点加一小时日程，标题写评审" → Agent 按 UTC ISO8601 构造并创建。
 

@@ -71,7 +71,7 @@ dingtalk-skills/
 | `dingtalk-todo` | `.agents/skills/dingtalk-todo/` | ✅ 可用 | 钉钉待办管理：创建、查询、更新、标记完成/撤销、删除待办任务 |
 | `dingtalk-contact` | `.agents/skills/dingtalk-contact/` | ✅ 可用 | 钉钉通讯录：按关键词搜索用户/部门、获取用户完整详情、部门树遍历、成员列表、身份转换、员工总数 |
 | `dingtalk-ai-web-search` | `.agents/skills/dingtalk-ai-web-search/` | ✅ 可用 | 网页搜索与实时信息检索：查最新资讯/实时数据/技术文档，基于小宿AI智能搜索，支持时间过滤与 JSON 输出 |
-| `dingtalk-calendar` | `.agents/skills/dingtalk-calendar/` | ✅ 可用 | 钉钉日程：主日历下创建/查询/列表/更新/删除日程事件，查询用户闲忙 |
+| `dingtalk-calendar` | `.agents/skills/dingtalk-calendar/` | ✅ 可用 | 钉钉日程：主日历 CRUD、闲忙、视频会议、会议室忙闲与绑定、签到签退与链接、循环/订阅说明（见 SKILL） |
 | `dingtalk-skill-creator` | `.agents/skills/dingtalk-skill-creator/` | ✅ 可用 | 标准化创建新钉钉技能的开发流程工具 |
 | `skill-creator` | `.agents/skills/skill-creator/` | ✅ 可用 | 技能开发框架（由 anthropics/skills 提供） |
 

@@ -170,6 +170,9 @@ npx skills add breath57/dingtalk-skills@dingtalk-calendar
 | Create / update / delete events | Events under `primary` calendar |
 | Get event & list by time range | Single event by id; paginated list |
 | Free/busy query | querySchedule for unionIds |
+| Video meetings / meeting rooms | DingTalk video; room busy query; attach rooms to events |
+| Sign-in / sign-out | Sign-in/out links; API sign-in/out |
+| Recurrence | `recurrence` on create; subscribed calendars need extra permissions |
 
 > Example: "Add a 1h meeting tomorrow at 3pm titled Review" → Agent builds ISO8601 times and creates the event.
 
