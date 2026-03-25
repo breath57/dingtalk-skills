@@ -1,4 +1,4 @@
-# 钉钉 Agent 技能库（dingtalk-skills
+# 钉钉 Agent 技能库（dingtalk-skills）
 
 [English](README_EN.md) | 中文
 
@@ -26,15 +26,68 @@
 **2. 将每次调用消耗的 Token 压到极限**
 Agent 每次执行任务都需要将技能文件装入上下文，**skill 文件本身就是成本**。我们的目标不只是「能用」，而是在保证正确率的前提下，把 `SKILL.md` 和 `references/api.md` 写得尽可能精炼——删掉所有冗余解释，用最短的指令表达最完整的语义。每一个字都要赚回自己的位置。
 
-## 技能列表
+## 技能纵览
 
-### ✅ 已上线
+| 技能 | 状态 | 说明 | 已上架平台 |
+|---|---|---|---|
+| [dingtalk-document](#dingtalk-document--钉钉知识库--文档) | ✅ 已上线 | 知识库与文档的创建、查询、目录浏览、内容读写、成员管理 | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-document) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/) |
+| [dingtalk-ai-table](#dingtalk-ai-table--钉钉-ai-表格) | ✅ 已上线 | AI 表格的工作表管理、字段管理、记录增删改查 | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-ai-table-only-curl) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/) |
+| [dingtalk-message](#dingtalk-message--钉钉消息发送) | ✅ 已上线 | 消息发送：Webhook 机器人、单聊/群聊、工作通知 | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-message) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/) |
+| [dingtalk-todo](#dingtalk-todo--钉钉待办) | ✅ 已上线 | 待办管理：创建、查询、更新、完成、删除 | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-todo) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/) |
+| [dingtalk-contact](#dingtalk-contact--钉钉通讯录) | ✅ 已上线 | 通讯录：搜索用户/部门、用户详情、部门树、成员列表 | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-contact) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/) |
+| [dingtalk-ai-web-search](#dingtalk-ai-web-search--网页搜索) | ✅ 已上线 | 网页搜索：关键词搜索、时间过滤、JSON 输出 | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-ai-web-search) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/) |
+| [dingtalk-calendar](#dingtalk-calendar--钉钉日程) | ✅ 已上线 | 日程：CRUD、闲忙、视频会议、会议室、签到签退 | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-calendar-only-curl) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/) |
+| dingtalk-approval | 🗓️ 计划中 | 审批流程管理 | — |
+| dingtalk-attendance | 🗓️ 计划中 | 考勤打卡管理 | — |
+| dingtalk-meeting | 🗓️ 计划中 | 视频会议管理 | — |
 
-#### [dingtalk-document](.agents/skills/dingtalk-document/) — 钉钉知识库 & 文档
+## 快速开始
+
+### 前置条件
+
+1. 在[钉钉开放平台](https://open.dingtalk.com/)创建企业内部应用
+2. 开通对应 API 权限（知识库 / AI 表格 / 机器人消息 / 待办 等）
+3. 准备好 `appKey`、`appSecret`，以及操作人的钉钉 `userId`（Agent 会引导你完成配置）
+
+### 安装技能
+
+每个技能支持两种安装方式：
+
+**1. ClawHub**
+```bash
+clawhub install breath57/dingtalk-document
+```
+
+**2. skills.sh**（全通用方式，支持 Cursor、Claude、Copilot、OpenClaw 等几乎所有 Agent）
+```bash
+npx skills add breath57/dingtalk-skills@dingtalk-document
+```
+
+### 开口说话
+
+安装后，Agent 会在首次运行时检查 `~/.dingtalk-skills/config`，缺什么一次性问清楚，自动写入。之后直接对话：
+
+```
+"查看我的钉钉知识库列表"
+"往 AI 表格的'需求池'工作表添加一条记录：标题=登录优化，优先级=高"
+"发群消息说明天上午十点开周会，Markdown 格式"
+"帮我建一个待办：下周五前完成竞品分析报告"
+```
+
+---
+
+## 技能详情
+
+### dingtalk-document — 钉钉知识库 & 文档
 
 🦞 [ClawHub · dingtalk-document](https://clawhub.ai/breath57/dingtalk-document)
 
+**安装**
 ```bash
+# 1. ClawHub
+clawhub install breath57/dingtalk-document
+
+# 2. skills.sh（全通用方式，支持 Cursor / Claude / Copilot / OpenClaw 等几乎所有 Agent）
 npx skills add breath57/dingtalk-skills@dingtalk-document
 ```
 
@@ -52,11 +105,18 @@ npx skills add breath57/dingtalk-skills@dingtalk-document
 
 > 示例："把这份会议纪要写入知识库'项目文档'下的'2026-03'文件夹" → Agent 自动查目录、建文档、写内容。
 
-#### [dingtalk-ai-table](.agents/skills/dingtalk-ai-table/) — 钉钉 AI 表格
+---
+
+### dingtalk-ai-table — 钉钉 AI 表格
 
 🦞 [ClawHub · dingtalk-ai-table](https://clawhub.ai/breath57/dingtalk-ai-table-only-curl)
 
+**安装**
 ```bash
+# 1. ClawHub
+clawhub install breath57/dingtalk-ai-table-only-curl
+
+# 2. skills.sh（全通用方式，支持 Cursor / Claude / Copilot / OpenClaw 等几乎所有 Agent）
 npx skills add breath57/dingtalk-skills@dingtalk-ai-table
 ```
 
@@ -73,11 +133,18 @@ npx skills add breath57/dingtalk-skills@dingtalk-ai-table
 
 > 示例："查一下任务表里状态是'进行中'的所有记录" → Agent 自动拉取字段定义、翻页读取、过滤返回。
 
-#### [dingtalk-message](.agents/skills/dingtalk-message/) — 钉钉消息发送
+---
+
+### dingtalk-message — 钉钉消息发送
 
 🦞 [ClawHub · dingtalk-message](https://clawhub.ai/breath57/dingtalk-message)
 
+**安装**
 ```bash
+# 1. ClawHub
+clawhub install breath57/dingtalk-message
+
+# 2. skills.sh（全通用方式，支持 Cursor / Claude / Copilot / OpenClaw 等几乎所有 Agent）
 npx skills add breath57/dingtalk-skills@dingtalk-message
 ```
 
@@ -97,11 +164,18 @@ npx skills add breath57/dingtalk-skills@dingtalk-message
 
 > 示例："发群消息说今天 v2.1 上线了，Markdown 格式" → Agent 自动构造消息体并发送。
 
-#### [dingtalk-todo](.agents/skills/dingtalk-todo/) — 钉钉待办
+---
+
+### dingtalk-todo — 钉钉待办
 
 🦞 [ClawHub · dingtalk-todo](https://clawhub.ai/breath57/dingtalk-todo)
 
+**安装**
 ```bash
+# 1. ClawHub
+clawhub install breath57/dingtalk-todo
+
+# 2. skills.sh（全通用方式，支持 Cursor / Claude / Copilot / OpenClaw 等几乎所有 Agent）
 npx skills add breath57/dingtalk-skills@dingtalk-todo
 ```
 
@@ -116,11 +190,18 @@ npx skills add breath57/dingtalk-skills@dingtalk-todo
 
 > 示例："帮我新建一个待办：下周五前完成竞品分析" → Agent 自动设置截止时间并创建任务。
 
-#### [dingtalk-contact](.agents/skills/dingtalk-contact/) — 钉钉通讯录
+---
+
+### dingtalk-contact — 钉钉通讯录
 
 🦞 [ClawHub · dingtalk-contact](https://clawhub.ai/breath57/dingtalk-contact)
 
+**安装**
 ```bash
+# 1. ClawHub
+clawhub install breath57/dingtalk-contact
+
+# 2. skills.sh（全通用方式，支持 Cursor / Claude / Copilot / OpenClaw 等几乎所有 Agent）
 npx skills add breath57/dingtalk-skills@dingtalk-contact
 ```
 
@@ -139,11 +220,18 @@ npx skills add breath57/dingtalk-skills@dingtalk-contact
 
 > 示例："查一下张三的手机号和所在部门" → Agent 搜索用户、获取详情并返回。
 
-#### [dingtalk-ai-web-search](.agents/skills/dingtalk-ai-web-search/) — 网页搜索
+---
+
+### dingtalk-ai-web-search — 网页搜索
 
 🦞 [ClawHub · dingtalk-ai-web-search](https://clawhub.ai/breath57/dingtalk-ai-web-search)
 
+**安装**
 ```bash
+# 1. ClawHub
+clawhub install breath57/dingtalk-ai-web-search
+
+# 2. skills.sh（全通用方式，支持 Cursor / Claude / Copilot / OpenClaw 等几乎所有 Agent）
 npx skills add breath57/dingtalk-skills@dingtalk-ai-web-search
 ```
 
@@ -156,11 +244,18 @@ npx skills add breath57/dingtalk-skills@dingtalk-ai-web-search
 
 > 示例："帮我搜一下 Python asyncio 最佳实践" → Agent 自动搜索并返回最新结果摘要。
 
-#### [dingtalk-calendar](.agents/skills/dingtalk-calendar/) — 钉钉日程
+---
 
-🦞 [ClawHub · dingtalk-calendar](https://clawhub.ai/breath57/dingtalk-calendar)
+### dingtalk-calendar — 钉钉日程
 
+🦞 [ClawHub · dingtalk-calendar](https://clawhub.ai/breath57/dingtalk-calendar-only-curl)
+
+**安装**
 ```bash
+# 1. ClawHub
+clawhub install breath57/dingtalk-calendar-only-curl
+
+# 2. skills.sh（全通用方式，支持 Cursor / Claude / Copilot / OpenClaw 等几乎所有 Agent）
 npx skills add breath57/dingtalk-skills@dingtalk-calendar
 ```
 
@@ -175,40 +270,7 @@ npx skills add breath57/dingtalk-skills@dingtalk-calendar
 
 > 示例："明天下午三点加一小时日程，标题写评审" → Agent 按 UTC ISO8601 构造并创建。
 
-### 🗓️ 计划中
-
-`dingtalk-approval` · `dingtalk-attendance` · `dingtalk-meeting`
-
-## 快速开始
-
-**第一步：安装技能**
-
-```bash
-npx skills add breath57/dingtalk-skills@dingtalk-document
-npx skills add breath57/dingtalk-skills@dingtalk-ai-table
-npx skills add breath57/dingtalk-skills@dingtalk-message
-npx skills add breath57/dingtalk-skills@dingtalk-todo
-npx skills add breath57/dingtalk-skills@dingtalk-contact
-npx skills add breath57/dingtalk-skills@dingtalk-ai-web-search
-npx skills add breath57/dingtalk-skills@dingtalk-calendar
-```
-
-**第二步：开口说话**
-
-Agent 会在首次运行时检查 `~/.dingtalk-skills/config`，缺什么一次性问清楚，自动写入。之后直接对话：
-
-```
-"查看我的钉钉知识库列表"
-"往 AI 表格的'需求池'工作表添加一条记录：标题=登录优化，优先级=高"
-"发群消息说明天上午十点开周会，Markdown 格式"
-"帮我建一个待办：下周五前完成竞品分析报告"
-```
-
-## 前置条件
-
-1. 在[钉钉开放平台](https://open.dingtalk.com/)创建企业内部应用
-2. 开通对应 API 权限（知识库 / AI 表格 / 机器人消息 / 待办 等）
-3. 准备好 `appKey`、`appSecret`，以及操作人的钉钉 `userId`（Agent 会引导你完成配置）
+---
 
 ## 项目结构
 

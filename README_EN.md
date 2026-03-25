@@ -1,4 +1,4 @@
-# dingtalk-skills 
+# dingtalk-skills
 
 中文 | [English](README_EN.md)
 
@@ -15,7 +15,6 @@ Built on the [Anthropic skills spec](https://github.com/anthropics/skills), with
 - **Talk, don't code**: "Add three records to the task table" → Agent handles it end-to-end, no API knowledge required
 - **Zero dependencies**: Only `curl` for HTTP requests — no Python, no SDK, no extra languages to install
 - **Configure once, use everywhere**: On first run, the agent collects appKey/appSecret/operatorId in a single prompt, saves to `~/.dingtalk-skills/config`, and reuses across all skills automatically
-- **Production-ready from day one**: Full CRUD coverage for DingTalk's most-used document and table APIs, with live tests verifying every endpoint
 
 ## Long-term Goals
 
@@ -27,15 +26,68 @@ No SDKs, no runtimes, no third-party dependencies — ever. If the system has `c
 **2. Push token cost to the absolute minimum**
 Every task execution loads skill files into the agent's context window — **the skill file itself is a cost**. Our goal isn't just correctness; it's writing `SKILL.md` and `references/api.md` as concisely as possible while maintaining full accuracy. Strip every redundant explanation. Express complete semantics with the shortest possible instructions. Every token must earn its place.
 
-## Skills
+## Skills Overview
 
-### ✅ Available
+| Skill | Status | Description | Published On |
+|---|---|---|---|
+| [dingtalk-document](#dingtalk-document--knowledge-base--documents) | ✅ Available | Knowledge base & document CRUD, directory browsing, member management | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-document) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/) |
+| [dingtalk-ai-table](#dingtalk-ai-table--ai-table-notable) | ✅ Available | AI table sheet/field/record management | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-ai-table-only-curl) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/) |
+| [dingtalk-message](#dingtalk-message--message-sending) | ✅ Available | Messages: Webhook robot, single/group chat, work notifications | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-message) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/) |
+| [dingtalk-todo](#dingtalk-todo--dingtalk-todo) | ✅ Available | Todo management: create, query, update, complete, delete | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-todo) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/) |
+| [dingtalk-contact](#dingtalk-contact--dingtalk-directory) | ✅ Available | Directory: search users/departments, user details, department tree | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-contact) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/) |
+| [dingtalk-ai-web-search](#dingtalk-ai-web-search--web-search) | ✅ Available | Web search: keyword search, time filter, JSON output | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-ai-web-search) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/) |
+| [dingtalk-calendar](#dingtalk-calendar--calendar--schedule) | ✅ Available | Calendar: CRUD, free/busy, video meetings, rooms, sign-in/out | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-calendar-only-curl) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/) |
+| dingtalk-approval | 🗓️ Planned | Approval workflow management | — |
+| dingtalk-attendance | 🗓️ Planned | Attendance & check-in management | — |
+| dingtalk-meeting | 🗓️ Planned | Video meeting management | — |
 
-#### [dingtalk-document](.agents/skills/dingtalk-document/) — Knowledge Base & Documents
+## Quick Start
+
+### Prerequisites
+
+1. A DingTalk enterprise internal app on [DingTalk Open Platform](https://open.dingtalk.com/)
+2. Relevant API permissions enabled (Knowledge Base / AI Table / Robot Message / Todo, etc.)
+3. Your `appKey`, `appSecret`, and DingTalk `userId` — the agent will walk you through the setup
+
+### Install a Skill
+
+Each skill supports two installation methods:
+
+**1. ClawHub**
+```bash
+clawhub install breath57/dingtalk-document
+```
+
+**2. skills.sh** (universal — works with Cursor, Claude, Copilot, OpenClaw, and almost any Agent)
+```bash
+npx skills add breath57/dingtalk-skills@dingtalk-document
+```
+
+### Just Talk
+
+On first run, the agent checks `~/.dingtalk-skills/config`, asks for anything missing in one go, and saves it. Then:
+
+```
+"List my DingTalk knowledge bases"
+"Add a record to the 'Backlog' sheet: title=Login fix, priority=High"
+"Send a group message saying v2.1 is live, use Markdown format"
+"Create a todo: finish competitive analysis by next Friday"
+```
+
+---
+
+## Skill Details
+
+### dingtalk-document — Knowledge Base & Documents
 
 🦞 [ClawHub · dingtalk-document](https://clawhub.ai/breath57/dingtalk-document)
 
+**Install**
 ```bash
+# 1. ClawHub
+clawhub install breath57/dingtalk-document
+
+# 2. skills.sh (universal — works with Cursor / Claude / Copilot / OpenClaw and almost any Agent)
 npx skills add breath57/dingtalk-skills@dingtalk-document
 ```
 
@@ -53,11 +105,18 @@ npx skills add breath57/dingtalk-skills@dingtalk-document
 
 > Example: "Write this meeting summary into the '2026-03' folder under the 'Project Docs' workspace" → Agent finds the directory, creates the document, and writes the content.
 
-#### [dingtalk-ai-table](.agents/skills/dingtalk-ai-table/) — AI Table (Notable)
+---
+
+### dingtalk-ai-table — AI Table (Notable)
 
 🦞 [ClawHub · dingtalk-ai-table](https://clawhub.ai/breath57/dingtalk-ai-table-only-curl)
 
+**Install**
 ```bash
+# 1. ClawHub
+clawhub install breath57/dingtalk-ai-table-only-curl
+
+# 2. skills.sh (universal — works with Cursor / Claude / Copilot / OpenClaw and almost any Agent)
 npx skills add breath57/dingtalk-skills@dingtalk-ai-table
 ```
 
@@ -74,11 +133,18 @@ npx skills add breath57/dingtalk-skills@dingtalk-ai-table
 
 > Example: "Show me all records in the task sheet where status is 'In Progress'" → Agent fetches field definitions, paginates through all records, and filters the results.
 
-#### [dingtalk-message](.agents/skills/dingtalk-message/) — Message Sending
+---
+
+### dingtalk-message — Message Sending
 
 🦞 [ClawHub · dingtalk-message](https://clawhub.ai/breath57/dingtalk-message)
 
+**Install**
 ```bash
+# 1. ClawHub
+clawhub install breath57/dingtalk-message
+
+# 2. skills.sh (universal — works with Cursor / Claude / Copilot / OpenClaw and almost any Agent)
 npx skills add breath57/dingtalk-skills@dingtalk-message
 ```
 
@@ -98,11 +164,18 @@ npx skills add breath57/dingtalk-skills@dingtalk-message
 
 > Example: "Send a group message saying v2.1 is live today, use Markdown" → Agent constructs the message body and sends it.
 
-#### [dingtalk-todo](.agents/skills/dingtalk-todo/) — DingTalk Todo
+---
+
+### dingtalk-todo — DingTalk Todo
 
 🦞 [ClawHub · dingtalk-todo](https://clawhub.ai/breath57/dingtalk-todo)
 
+**Install**
 ```bash
+# 1. ClawHub
+clawhub install breath57/dingtalk-todo
+
+# 2. skills.sh (universal — works with Cursor / Claude / Copilot / OpenClaw and almost any Agent)
 npx skills add breath57/dingtalk-skills@dingtalk-todo
 ```
 
@@ -117,11 +190,18 @@ npx skills add breath57/dingtalk-skills@dingtalk-todo
 
 > Example: "Create a todo: finish competitive analysis by next Friday" → Agent auto-sets the due date and creates the task.
 
-#### [dingtalk-contact](.agents/skills/dingtalk-contact/) — DingTalk Directory
+---
+
+### dingtalk-contact — DingTalk Directory
 
 🦞 [ClawHub · dingtalk-contact](https://clawhub.ai/breath57/dingtalk-contact)
 
+**Install**
 ```bash
+# 1. ClawHub
+clawhub install breath57/dingtalk-contact
+
+# 2. skills.sh (universal — works with Cursor / Claude / Copilot / OpenClaw and almost any Agent)
 npx skills add breath57/dingtalk-skills@dingtalk-contact
 ```
 
@@ -140,11 +220,18 @@ npx skills add breath57/dingtalk-skills@dingtalk-contact
 
 > Example: "Find Zhang San's mobile number and department" → Agent searches the user, fetches details, and returns the info.
 
-#### [dingtalk-ai-web-search](.agents/skills/dingtalk-ai-web-search/) — Web Search
+---
+
+### dingtalk-ai-web-search — Web Search
 
 🦞 [ClawHub · dingtalk-ai-web-search](https://clawhub.ai/breath57/dingtalk-ai-web-search)
 
+**Install**
 ```bash
+# 1. ClawHub
+clawhub install breath57/dingtalk-ai-web-search
+
+# 2. skills.sh (universal — works with Cursor / Claude / Copilot / OpenClaw and almost any Agent)
 npx skills add breath57/dingtalk-skills@dingtalk-ai-web-search
 ```
 
@@ -157,11 +244,18 @@ npx skills add breath57/dingtalk-skills@dingtalk-ai-web-search
 
 > Example: "Search for Python asyncio best practices" → Agent searches and returns the latest result summaries.
 
-#### [dingtalk-calendar](.agents/skills/dingtalk-calendar/) — Calendar & Schedule
+---
 
-🦞 [ClawHub · dingtalk-calendar](https://clawhub.ai/breath57/dingtalk-calendar)
+### dingtalk-calendar — Calendar & Schedule
 
+🦞 [ClawHub · dingtalk-calendar](https://clawhub.ai/breath57/dingtalk-calendar-only-curl)
+
+**Install**
 ```bash
+# 1. ClawHub
+clawhub install breath57/dingtalk-calendar-only-curl
+
+# 2. skills.sh (universal — works with Cursor / Claude / Copilot / OpenClaw and almost any Agent)
 npx skills add breath57/dingtalk-skills@dingtalk-calendar
 ```
 
@@ -176,40 +270,7 @@ npx skills add breath57/dingtalk-skills@dingtalk-calendar
 
 > Example: "Add a 1h meeting tomorrow at 3pm titled Review" → Agent builds ISO8601 times and creates the event.
 
-### 🗓️ Planned
-
-`dingtalk-approval` · `dingtalk-attendance` · `dingtalk-meeting`
-
-## Quick Start
-
-**Step 1: Install skills**
-
-```bash
-npx skills add breath57/dingtalk-skills@dingtalk-document
-npx skills add breath57/dingtalk-skills@dingtalk-ai-table
-npx skills add breath57/dingtalk-skills@dingtalk-message
-npx skills add breath57/dingtalk-skills@dingtalk-todo
-npx skills add breath57/dingtalk-skills@dingtalk-contact
-npx skills add breath57/dingtalk-skills@dingtalk-ai-web-search
-npx skills add breath57/dingtalk-skills@dingtalk-calendar
-```
-
-**Step 2: Just talk**
-
-On first run, the agent checks `~/.dingtalk-skills/config`, asks for anything missing in one go, and saves it. Then:
-
-```
-"List my DingTalk knowledge bases"
-"Add a record to the 'Backlog' sheet: title=Login fix, priority=High"
-"Send a group message saying v2.1 is live, use Markdown format"
-"Create a todo: finish competitive analysis by next Friday"
-```
-
-## Prerequisites
-
-1. A DingTalk enterprise internal app on [DingTalk Open Platform](https://open.dingtalk.com/)
-2. Relevant API permissions enabled (Knowledge Base / AI Table / Robot Message / Todo, etc.)
-3. Your `appKey`, `appSecret`, and DingTalk `userId` — the agent will walk you through the setup
+---
 
 ## License
 
