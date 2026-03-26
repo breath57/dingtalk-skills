@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-merge_traffic.py — 合并 docs/traffic/raw/ 下所有原始 JSON 文件，生成 data.js
+merge_traffic.py — 合并 traffic/raw/ 下所有原始 JSON，生成 data.js（支持多仓库）
 
+配置文件: traffic/config.json
 运行: python3 scripts/merge_traffic.py
 """
 import json
@@ -14,12 +15,18 @@ ROOT = Path(__file__).parent.parent
 TRAFFIC_DIR = ROOT / "traffic"
 RAW_DIR = TRAFFIC_DIR / "raw"
 DATA_JS = TRAFFIC_DIR / "data.js"
+CONFIG = TRAFFIC_DIR / "config.json"
+
+
+def load_config() -> list[str]:
+    if CONFIG.exists():
+        return json.loads(CONFIG.read_text(encoding="utf-8")).get("repos", [])
+    return ["breath57/dingtalk-skills"]
 
 
 def load_existing() -> dict:
-    """加载已有的 data.js 中的数据（增量合并用）"""
     if not DATA_JS.exists():
-        return {"repo": "breath57/dingtalk-skills", "daily": {}, "summary": {}}
+        return {"repos": {}}
     m = re.search(
         r"const TRAFFIC_DATA\s*=\s*(\{.*\})\s*;",
         DATA_JS.read_text(encoding="utf-8"),
@@ -30,17 +37,15 @@ def load_existing() -> dict:
             return json.loads(m.group(1))
         except json.JSONDecodeError:
             pass
-    return {"repo": "breath57/dingtalk-skills", "daily": {}, "summary": {}}
+    return {"repos": {}}
 
 
-def main():
-    RAW_DIR.mkdir(parents=True, exist_ok=True)
-    data = load_existing()
-    daily: dict = data.get("daily", {})
+def merge_repo(repo: str, existing_repo: dict) -> dict:
+    slug = repo.replace("/", "_")
+    repo_raw = RAW_DIR / slug
+    daily: dict = existing_repo.get("daily", {})
 
-    # 合并 clone 文件
-    clone_files = sorted(RAW_DIR.glob("clones-*.json"))
-    for f in clone_files:
+    for f in sorted(repo_raw.glob("clones-*.json")):
         try:
             for entry in json.loads(f.read_text()).get("clones", []):
                 day = entry["timestamp"][:10]
@@ -50,9 +55,7 @@ def main():
         except Exception as e:
             print(f"⚠  跳过 {f.name}: {e}", file=sys.stderr)
 
-    # 合并 view 文件
-    view_files = sorted(RAW_DIR.glob("views-*.json"))
-    for f in view_files:
+    for f in sorted(repo_raw.glob("views-*.json")):
         try:
             for entry in json.loads(f.read_text()).get("views", []):
                 day = entry["timestamp"][:10]
@@ -62,28 +65,42 @@ def main():
         except Exception as e:
             print(f"⚠  跳过 {f.name}: {e}", file=sys.stderr)
 
-    # 取最新 repo stats
-    summary = data.get("summary", {})
-    repo_files = sorted(RAW_DIR.glob("repo-*.json"))
+    summary = existing_repo.get("summary", {})
+    repo_files = sorted(repo_raw.glob("repo-*.json"))
     if repo_files:
         try:
-            repo = json.loads(repo_files[-1].read_text())
-            summary["stars"] = repo.get("stars", summary.get("stars", 0))
-            summary["forks"] = repo.get("forks", summary.get("forks", 0))
+            r = json.loads(repo_files[-1].read_text())
+            summary["stars"] = r.get("stars", 0)
+            summary["forks"] = r.get("forks", 0)
         except Exception:
             pass
 
-    # 计算累计总量（各日求和，注意 GitHub 每日独立计数，汇总会略高于实际唯一数）
     summary["total_clones"] = sum(d.get("clones", 0) for d in daily.values())
     summary["total_clone_uniques"] = sum(d.get("clone_uniques", 0) for d in daily.values())
     summary["total_views"] = sum(d.get("views", 0) for d in daily.values())
     summary["total_view_uniques"] = sum(d.get("view_uniques", 0) for d in daily.values())
 
-    result = {
-        "repo": "breath57/dingtalk-skills",
-        "last_updated": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
+    return {
+        "name": repo,
         "summary": summary,
         "daily": dict(sorted(daily.items())),
+    }
+
+
+def main():
+    repos = load_config()
+    existing = load_existing()
+    existing_repos = existing.get("repos", {})
+
+    all_repos = {}
+    for repo in repos:
+        slug = repo.replace("/", "_")
+        (RAW_DIR / slug).mkdir(parents=True, exist_ok=True)
+        all_repos[slug] = merge_repo(repo, existing_repos.get(slug, {}))
+
+    result = {
+        "last_updated": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
+        "repos": all_repos,
     }
 
     js = (
@@ -93,13 +110,16 @@ def main():
         + ";\n"
     )
     DATA_JS.write_text(js, encoding="utf-8")
-    days = len(daily)
-    print(
-        f"✅ data.js 已更新：{days} 天数据，"
-        f"累计 clone={summary['total_clones']}，"
-        f"view={summary['total_views']}，"
-        f"⭐{summary.get('stars', 0)}"
-    )
+
+    for slug, rd in all_repos.items():
+        s = rd["summary"]
+        days = len(rd["daily"])
+        print(
+            f"  {rd['name']}: {days} 天, "
+            f"clone={s['total_clones']}, view={s['total_views']}, "
+            f"⭐{s.get('stars', 0)}"
+        )
+    print(f"✅ data.js 已更新 ({len(all_repos)} 个仓库)")
 
 
 if __name__ == "__main__":
