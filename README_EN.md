@@ -4,7 +4,7 @@
 
 ---
 
-**Adapted for [OpenClaw](https://openclaw.ai) 🦞** — install from [ClawHub](https://clawhub.ai) with one click.
+**Adapted for [OpenClaw](https://openclaw.ai) 🦞** — install from [ClawHub](https://clawhub.ai) · [Skills.sh](https://skills.sh/breath57/dingtalk-skills) with one click.
 
 Let your AI Agent operate DingTalk directly — no manual API calls, no token management, just conversation.
 
@@ -30,13 +30,13 @@ Every task execution loads skill files into the agent's context window — **the
 
 | Skill | Status | Description | Published On |
 |---|---|---|---|
-| [dingtalk-document](#dingtalk-document--knowledge-base--documents) | ✅ Available | Knowledge base & document CRUD, directory browsing, member management | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-document) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/) |
-| [dingtalk-ai-table](#dingtalk-ai-table--ai-table-notable) | ✅ Available | AI table sheet/field/record management | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-ai-table-only-curl) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/) |
-| [dingtalk-message](#dingtalk-message--message-sending) | ✅ Available | Messages: Webhook robot, single/group chat, work notifications | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-message) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/) |
-| [dingtalk-todo](#dingtalk-todo--dingtalk-todo) | ✅ Available | Todo management: create, query, update, complete, delete | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-todo) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/) |
-| [dingtalk-contact](#dingtalk-contact--dingtalk-directory) | ✅ Available | Directory: search users/departments, user details, department tree | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-contact) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/) |
-| [dingtalk-ai-web-search](#dingtalk-ai-web-search--web-search) | ✅ Available | Web search: keyword search, time filter, JSON output | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-ai-web-search) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/) |
-| [dingtalk-calendar](#dingtalk-calendar--calendar--schedule) | ✅ Available | Calendar: CRUD, free/busy, video meetings, rooms, sign-in/out | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-calendar-only-curl) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/) |
+| [dingtalk-document](#dingtalk-document--knowledge-base--documents) | ✅ Available | Knowledge base & document CRUD, directory browsing, member management | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-document) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/breath57/dingtalk-skills/dingtalk-document) |
+| [dingtalk-ai-table](#dingtalk-ai-table--ai-table-notable) | ✅ Available | AI table sheet/field/record management | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-ai-table) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/breath57/dingtalk-skills/dingtalk-ai-table) |
+| [dingtalk-message](#dingtalk-message--message-sending) | ✅ Available | Messages: Webhook robot, single/group chat, work notifications | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-message) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/breath57/dingtalk-skills/dingtalk-message) |
+| [dingtalk-todo](#dingtalk-todo--dingtalk-todo) | ✅ Available | Todo management: create, query, update, complete, delete | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-todo) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/breath57/dingtalk-skills/dingtalk-todo) |
+| [dingtalk-contact](#dingtalk-contact--dingtalk-directory) | ✅ Available | Directory: search users/departments, user details, department tree | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-contact) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/breath57/dingtalk-skills/dingtalk-contact) |
+| [dingtalk-ai-web-search](#dingtalk-ai-web-search--web-search) | ✅ Available | Web search: keyword search, time filter, JSON output | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-ai-web-search) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/breath57/dingtalk-skills/dingtalk-ai-web-search) |
+| [dingtalk-calendar](#dingtalk-calendar--calendar--schedule) | ✅ Available | Calendar: CRUD, free/busy, video meetings, rooms, sign-in/out | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-calendar) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/breath57/dingtalk-skills/dingtalk-calendar) |
 | dingtalk-approval | 🗓️ Planned | Approval workflow management | — |
 | dingtalk-attendance | 🗓️ Planned | Attendance & check-in management | — |
 | dingtalk-meeting | 🗓️ Planned | Video meeting management | — |
@@ -62,6 +62,20 @@ clawhub install breath57/dingtalk-document
 ```bash
 npx skills add breath57/dingtalk-skills@dingtalk-document
 ```
+
+**Install all skills at once** (excluding developer-only tools):
+```bash
+npx skills add \
+  breath57/dingtalk-skills@dingtalk-document \
+  breath57/dingtalk-skills@dingtalk-ai-table \
+  breath57/dingtalk-skills@dingtalk-message \
+  breath57/dingtalk-skills@dingtalk-todo \
+  breath57/dingtalk-skills@dingtalk-contact \
+  breath57/dingtalk-skills@dingtalk-ai-web-search \
+  breath57/dingtalk-skills@dingtalk-calendar
+```
+
+> `dingtalk-skill-creator` and `skill-creator` are developer tools and not included in the batch install.
 
 ### Just Talk
 
@@ -109,12 +123,12 @@ npx skills add breath57/dingtalk-skills@dingtalk-document
 
 ### dingtalk-ai-table — AI Table (Notable)
 
-🦞 [ClawHub · dingtalk-ai-table](https://clawhub.ai/breath57/dingtalk-ai-table-only-curl)
+🦞 [ClawHub · dingtalk-ai-table](https://clawhub.ai/breath57/dingtalk-ai-table)
 
 **Install**
 ```bash
 # 1. ClawHub
-clawhub install breath57/dingtalk-ai-table-only-curl
+clawhub install breath57/dingtalk-ai-table
 
 # 2. skills.sh (universal — works with Cursor / Claude / Copilot / OpenClaw and almost any Agent)
 npx skills add breath57/dingtalk-skills@dingtalk-ai-table
@@ -248,12 +262,12 @@ npx skills add breath57/dingtalk-skills@dingtalk-ai-web-search
 
 ### dingtalk-calendar — Calendar & Schedule
 
-🦞 [ClawHub · dingtalk-calendar](https://clawhub.ai/breath57/dingtalk-calendar-only-curl)
+🦞 [ClawHub · dingtalk-calendar](https://clawhub.ai/breath57/dingtalk-calendar)
 
 **Install**
 ```bash
 # 1. ClawHub
-clawhub install breath57/dingtalk-calendar-only-curl
+clawhub install breath57/dingtalk-calendar
 
 # 2. skills.sh (universal — works with Cursor / Claude / Copilot / OpenClaw and almost any Agent)
 npx skills add breath57/dingtalk-skills@dingtalk-calendar

@@ -4,7 +4,7 @@
 
 ---
 
-**已适配 [OpenClaw](https://openclaw.ai) 🦞**，可从 [ClawHub](https://clawhub.ai) 一键安装。
+**已适配 [OpenClaw](https://openclaw.ai) 🦞**，可从 [ClawHub](https://clawhub.ai) · [Skills.sh](https://skills.sh/breath57/dingtalk-skills) 一键安装。
 
 让 AI Agent 直接操作钉钉——无需手写 API 调用，无需手动管理 Token，对话即操作。
 
@@ -30,13 +30,13 @@ Agent 每次执行任务都需要将技能文件装入上下文，**skill 文件
 
 | 技能 | 状态 | 说明 | 已上架平台 |
 |---|---|---|---|
-| [dingtalk-document](#dingtalk-document--钉钉知识库--文档) | ✅ 已上线 | 知识库与文档的创建、查询、目录浏览、内容读写、成员管理 | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-document) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/) |
-| [dingtalk-ai-table](#dingtalk-ai-table--钉钉-ai-表格) | ✅ 已上线 | AI 表格的工作表管理、字段管理、记录增删改查 | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-ai-table-only-curl) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/) |
-| [dingtalk-message](#dingtalk-message--钉钉消息发送) | ✅ 已上线 | 消息发送：Webhook 机器人、单聊/群聊、工作通知 | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-message) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/) |
-| [dingtalk-todo](#dingtalk-todo--钉钉待办) | ✅ 已上线 | 待办管理：创建、查询、更新、完成、删除 | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-todo) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/) |
-| [dingtalk-contact](#dingtalk-contact--钉钉通讯录) | ✅ 已上线 | 通讯录：搜索用户/部门、用户详情、部门树、成员列表 | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-contact) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/) |
-| [dingtalk-ai-web-search](#dingtalk-ai-web-search--网页搜索) | ✅ 已上线 | 网页搜索：关键词搜索、时间过滤、JSON 输出 | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-ai-web-search) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/) |
-| [dingtalk-calendar](#dingtalk-calendar--钉钉日程) | ✅ 已上线 | 日程：CRUD、闲忙、视频会议、会议室、签到签退 | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-calendar-only-curl) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/) |
+| [dingtalk-document](#dingtalk-document--钉钉知识库--文档) | ✅ 已上线 | 知识库与文档的创建、查询、目录浏览、内容读写、成员管理 | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-document) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/breath57/dingtalk-skills/dingtalk-document) |
+| [dingtalk-ai-table](#dingtalk-ai-table--钉钉-ai-表格) | ✅ 已上线 | AI 表格的工作表管理、字段管理、记录增删改查 | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-ai-table) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/breath57/dingtalk-skills/dingtalk-ai-table) |
+| [dingtalk-message](#dingtalk-message--钉钉消息发送) | ✅ 已上线 | 消息发送：Webhook 机器人、单聊/群聊、工作通知 | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-message) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/breath57/dingtalk-skills/dingtalk-message) |
+| [dingtalk-todo](#dingtalk-todo--钉钉待办) | ✅ 已上线 | 待办管理：创建、查询、更新、完成、删除 | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-todo) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/breath57/dingtalk-skills/dingtalk-todo) |
+| [dingtalk-contact](#dingtalk-contact--钉钉通讯录) | ✅ 已上线 | 通讯录：搜索用户/部门、用户详情、部门树、成员列表 | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-contact) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/breath57/dingtalk-skills/dingtalk-contact) |
+| [dingtalk-ai-web-search](#dingtalk-ai-web-search--网页搜索) | ✅ 已上线 | 网页搜索：关键词搜索、时间过滤、JSON 输出 | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-ai-web-search) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/breath57/dingtalk-skills/dingtalk-ai-web-search) |
+| [dingtalk-calendar](#dingtalk-calendar--钉钉日程) | ✅ 已上线 | 日程：CRUD、闲忙、视频会议、会议室、签到签退 | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-calendar) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/breath57/dingtalk-skills/dingtalk-calendar) |
 | dingtalk-approval | 🗓️ 计划中 | 审批流程管理 | — |
 | dingtalk-attendance | 🗓️ 计划中 | 考勤打卡管理 | — |
 | dingtalk-meeting | 🗓️ 计划中 | 视频会议管理 | — |
@@ -62,6 +62,20 @@ clawhub install breath57/dingtalk-document
 ```bash
 npx skills add breath57/dingtalk-skills@dingtalk-document
 ```
+
+**一键安装全部**（排除开发者专用技能）：
+```bash
+npx skills add \
+  breath57/dingtalk-skills@dingtalk-document \
+  breath57/dingtalk-skills@dingtalk-ai-table \
+  breath57/dingtalk-skills@dingtalk-message \
+  breath57/dingtalk-skills@dingtalk-todo \
+  breath57/dingtalk-skills@dingtalk-contact \
+  breath57/dingtalk-skills@dingtalk-ai-web-search \
+  breath57/dingtalk-skills@dingtalk-calendar
+```
+
+> `dingtalk-skill-creator` 和 `skill-creator` 为开发者工具，不在批量安装范围内。
 
 ### 开口说话
 
@@ -109,12 +123,12 @@ npx skills add breath57/dingtalk-skills@dingtalk-document
 
 ### dingtalk-ai-table — 钉钉 AI 表格
 
-🦞 [ClawHub · dingtalk-ai-table](https://clawhub.ai/breath57/dingtalk-ai-table-only-curl)
+🦞 [ClawHub · dingtalk-ai-table](https://clawhub.ai/breath57/dingtalk-ai-table)
 
 **安装**
 ```bash
 # 1. ClawHub
-clawhub install breath57/dingtalk-ai-table-only-curl
+clawhub install breath57/dingtalk-ai-table
 
 # 2. skills.sh（全通用方式，支持 Cursor / Claude / Copilot / OpenClaw 等几乎所有 Agent）
 npx skills add breath57/dingtalk-skills@dingtalk-ai-table
@@ -248,12 +262,12 @@ npx skills add breath57/dingtalk-skills@dingtalk-ai-web-search
 
 ### dingtalk-calendar — 钉钉日程
 
-🦞 [ClawHub · dingtalk-calendar](https://clawhub.ai/breath57/dingtalk-calendar-only-curl)
+🦞 [ClawHub · dingtalk-calendar](https://clawhub.ai/breath57/dingtalk-calendar)
 
 **安装**
 ```bash
 # 1. ClawHub
-clawhub install breath57/dingtalk-calendar-only-curl
+clawhub install breath57/dingtalk-calendar
 
 # 2. skills.sh（全通用方式，支持 Cursor / Claude / Copilot / OpenClaw 等几乎所有 Agent）
 npx skills add breath57/dingtalk-skills@dingtalk-calendar
