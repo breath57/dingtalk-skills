@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>dingtalk-skills · Traffic Dashboard</title>
+<script src="data.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:      #09090b;
+  --s1:      #0f0f12;
+  --s2:      #18181c;
+  --border:  #27272a;
+  --text:    #fafafa;
+  --muted:   #71717a;
+  --dim:     #52525b;
+  --green:   #22c55e;
+  --teal:    #14b8a6;
+  --blue:    #3b82f6;
+  --indigo:  #6366f1;
+  --amber:   #f59e0b;
+  --orange:  #f97316;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Helvetica, sans-serif;
+  min-height: 100vh;
+  padding: 2rem 2.5rem;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+/* ── Header ── */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.hd-left { display: flex; align-items: center; gap: 0.875rem; }
+
+.hd-icon {
+  width: 42px; height: 42px;
+  background: linear-gradient(135deg, #22c55e22 0%, #3b82f622 100%);
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+.hd-title { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.025em; }
+.hd-sub {
+  font-size: 0.72rem; color: var(--muted);
+  margin-top: 0.15rem; text-decoration: none;
+  transition: color 0.15s;
+}
+.hd-sub:hover { color: var(--blue); }
+
+.badge {
+  background: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.28rem 0.85rem;
+  font-size: 0.68rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* ── 6-col card grid ── */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.875rem;
+  margin-bottom: 1.25rem;
+}
+@media (max-width: 1100px) { .cards { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 640px)  { .cards { grid-template-columns: repeat(2, 1fr); } }
+
+.card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.2rem 1.2rem 0.9rem;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+  cursor: default;
+}
+.card:hover {
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--border));
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px #00000040;
+}
+/* top accent bar */
+.card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--accent), transparent);
+  border-radius: 14px 14px 0 0;
+}
+/* subtle radial glow */
+.card::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 20% 0%, color-mix(in srgb, var(--accent) 9%, transparent) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+.card-label {
+  font-size: 0.62rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.09em;
+  color: var(--muted); margin-bottom: 0.7rem;
+  display: flex; align-items: center; gap: 0.35rem;
+}
+.card-value {
+  font-size: 2rem; font-weight: 800;
+  letter-spacing: -0.045em; line-height: 1;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+.card-sub {
+  font-size: 0.62rem; color: var(--dim);
+  margin-top: 0.45rem;
+}
+
+/* ── Chart cards ── */
+.chart-card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.5rem 1.5rem 1.25rem;
+  margin-bottom: 1rem;
+}
+.chart-hd {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+.chart-title {
+  font-size: 0.72rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--muted);
+}
+.chart-wrap { position: relative; height: 250px; }
+
+/* ── Coverage / footer ── */
+.footer {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 0.5rem;
+  margin-top: 1.5rem;
+  font-size: 0.68rem; color: var(--dim);
+  padding-top: 1rem; border-top: 1px solid var(--border);
+}
+.footer a { color: var(--dim); text-decoration: none; }
+.footer a:hover { color: var(--blue); }
+
+/* ── Error state ── */
+.error-state {
+  color: var(--muted); padding: 5rem 2rem;
+  text-align: center; font-size: 0.875rem; line-height: 1.8;
+}
+.error-state code {
+  background: var(--s2); border: 1px solid var(--border);
+  border-radius: 6px; padding: 0.15rem 0.5rem; font-size: 0.8rem;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hd-left">
+    <div class="hd-icon">📊</div>
+    <div>
+      <div class="hd-title">dingtalk-skills</div>
+      <a class="hd-sub" href="https://github.com/breath57/dingtalk-skills" target="_blank">
+        github.com/breath57/dingtalk-skills ↗
+      </a>
+    </div>
+  </div>
+  <span id="last-updated" class="badge">载入中…</span>
+</header>
+
+<div class="cards">
+  <div class="card" style="--accent: var(--green)">
+    <div class="card-label">📥 总 Clone</div>
+    <div class="card-value" id="v-clones">—</div>
+    <div class="card-sub">全历史累计</div>
+  </div>
+  <div class="card" style="--accent: var(--teal)">
+    <div class="card-label">👥 独立 Cloner</div>
+    <div class="card-value" id="v-clone-u">—</div>
+    <div class="card-sub">每日之和</div>
+  </div>
+  <div class="card" style="--accent: var(--blue)">
+    <div class="card-label">👁 总访问量</div>
+    <div class="card-value" id="v-views">—</div>
+    <div class="card-sub">全历史累计</div>
+  </div>
+  <div class="card" style="--accent: var(--indigo)">
+    <div class="card-label">🧑 独立访客</div>
+    <div class="card-value" id="v-view-u">—</div>
+    <div class="card-sub">每日之和</div>
+  </div>
+  <div class="card" style="--accent: var(--amber)">
+    <div class="card-label">⭐ Stars</div>
+    <div class="card-value" id="v-stars">—</div>
+    <div class="card-sub">当前</div>
+  </div>
+  <div class="card" style="--accent: var(--orange)">
+    <div class="card-label">🍴 Forks</div>
+    <div class="card-value" id="v-forks">—</div>
+    <div class="card-sub">当前</div>
+  </div>
+</div>
+
+<div class="chart-card">
+  <div class="chart-hd">
+    <span class="chart-title">📥 Clone 趋势</span>
+  </div>
+  <div class="chart-wrap"><canvas id="chart-clones"></canvas></div>
+</div>
+
+<div class="chart-card">
+  <div class="chart-hd">
+    <span class="chart-title">👁 访问趋势</span>
+  </div>
+  <div class="chart-wrap"><canvas id="chart-views"></canvas></div>
+</div>
+
+<div class="footer">
+  <span id="coverage">—</span>
+  <span>
+    采集脚本: <code>./scripts/collect-traffic.sh</code> ·
+    本地预览: <code>cd traffic && python3 -m http.server 8080</code>
+  </span>
+</div>
+
+<script>
+(function () {
+  // data.js 通过 <script src="data.js"> 加载，file:// 协议建议用本地 http 服务
+  if (typeof TRAFFIC_DATA === 'undefined') {
+    document.querySelector('.cards').style.display = 'none';
+    document.querySelectorAll('.chart-card').forEach(el => el.style.display = 'none');
+    document.querySelector('.footer').insertAdjacentHTML('beforebegin', `
+      <div class="error-state">
+        ⚠ <strong>data.js 未找到</strong><br><br>
+        请先运行采集脚本：<code>./scripts/collect-traffic.sh</code><br>
+        然后本地预览：<code>cd docs/traffic && python3 -m http.server 8080</code>
+      </div>`);
+    return;
+  }
+
+  const D = TRAFFIC_DATA;
+  const fmt = n => (n ?? 0).toLocaleString('zh-CN');
+
+  // 填充卡片
+  document.getElementById('v-clones').textContent  = fmt(D.summary.total_clones);
+  document.getElementById('v-clone-u').textContent = fmt(D.summary.total_clone_uniques);
+  document.getElementById('v-views').textContent   = fmt(D.summary.total_views);
+  document.getElementById('v-view-u').textContent  = fmt(D.summary.total_view_uniques);
+  document.getElementById('v-stars').textContent   = fmt(D.summary.stars);
+  document.getElementById('v-forks').textContent   = fmt(D.summary.forks);
+  document.getElementById('last-updated').textContent = '更新于 ' + (D.last_updated || '—');
+
+  const days = Object.keys(D.daily).sort();
+  const labels = days.map(d => d.slice(5)); // MM-DD
+
+  if (!days.length) {
+    document.getElementById('coverage').textContent = '暂无数据，请运行采集脚本。';
+    return;
+  }
+  document.getElementById('coverage').textContent =
+    `数据覆盖：${days[0]}  ～  ${days[days.length - 1]}（共 ${days.length} 天）`;
+
+  // Chart.js 全局字体
+  Chart.defaults.font.family =
+    "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif";
+
+  // 渐变填充
+  const mkGrad = (ctx, hex) => {
+    const g = ctx.createLinearGradient(0, 0, 0, 250);
+    g.addColorStop(0, hex + '45');
+    g.addColorStop(1, hex + '00');
+    return g;
+  };
+
+  const ds = {
+    tension: 0.4, fill: true, spanGaps: true,
+    pointRadius: 3, pointHoverRadius: 6,
+    pointBorderWidth: 0, borderWidth: 2,
+  };
+
+  const opts = () => ({
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: {
+        labels: {
+          color: '#71717a', font: { size: 11 },
+          boxWidth: 10, padding: 20,
+          usePointStyle: true, pointStyleWidth: 10,
+        },
+      },
+      tooltip: {
+        backgroundColor: '#18181c',
+        titleColor: '#fafafa', bodyColor: '#a1a1aa',
+        borderColor: '#27272a', borderWidth: 1, padding: 10,
+        callbacks: {
+          label: ctx =>
+            ` ${ctx.dataset.label}: ${ctx.parsed.y?.toLocaleString('zh-CN') ?? '—'}`,
+        },
+      },
+    },
+    scales: {
+      x: {
+        grid: { color: '#18181c' },
+        ticks: { color: '#52525b', font: { size: 10 }, maxRotation: 0 },
+        border: { display: false },
+      },
+      y: {
+        grid: { color: '#18181c' },
+        ticks: { color: '#52525b', font: { size: 10 } },
+        beginAtZero: true,
+        border: { display: false },
+      },
+    },
+  });
+
+  // Clone 图
+  const ctxC = document.getElementById('chart-clones').getContext('2d');
+  new Chart(ctxC, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          ...ds, label: 'Clone 次数',
+          data: days.map(d => D.daily[d]?.clones ?? null),
+          borderColor: '#22c55e',
+          backgroundColor: mkGrad(ctxC, '#22c55e'),
+          pointBackgroundColor: '#22c55e',
+        },
+        {
+          ...ds, label: '独立 Cloner',
+          data: days.map(d => D.daily[d]?.clone_uniques ?? null),
+          borderColor: '#14b8a6',
+          backgroundColor: mkGrad(ctxC, '#14b8a6'),
+          pointBackgroundColor: '#14b8a6',
+        },
+      ],
+    },
+    options: opts(),
+  });
+
+  // View 图
+  const ctxV = document.getElementById('chart-views').getContext('2d');
+  new Chart(ctxV, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          ...ds, label: '访问量',
+          data: days.map(d => D.daily[d]?.views ?? null),
+          borderColor: '#3b82f6',
+          backgroundColor: mkGrad(ctxV, '#3b82f6'),
+          pointBackgroundColor: '#3b82f6',
+        },
+        {
+          ...ds, label: '独立访客',
+          data: days.map(d => D.daily[d]?.view_uniques ?? null),
+          borderColor: '#6366f1',
+          backgroundColor: mkGrad(ctxV, '#6366f1'),
+          pointBackgroundColor: '#6366f1',
+        },
+      ],
+    },
+    options: opts(),
+  });
+})();
+</script>
+</body>
+</html>
