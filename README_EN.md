@@ -63,14 +63,11 @@ clawhub install breath57/dingtalk-document
 npx skills add breath57/dingtalk-skills@dingtalk-document
 ```
 
-**Install all skills at once** (excluding developer-only tools):
+**Install all skills at once**:
 ```bash
 npx skills add breath57/dingtalk-skills \
-  -s 'dingtalk-document,dingtalk-ai-table,dingtalk-message,dingtalk-todo,dingtalk-contact,dingtalk-ai-web-search,dingtalk-calendar' \
-  -y
+  -s 'dingtalk-document,dingtalk-ai-table,dingtalk-message,dingtalk-todo,dingtalk-contact,dingtalk-ai-web-search,dingtalk-calendar'
 ```
-
-> `dingtalk-skill-creator` and `skill-creator` are developer tools and not included in the batch install.
 
 ### Just Talk
 

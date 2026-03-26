@@ -63,14 +63,11 @@ clawhub install breath57/dingtalk-document
 npx skills add breath57/dingtalk-skills@dingtalk-document
 ```
 
-**一键安装全部**（排除开发者专用技能）：
+**一键安装全部**：
 ```bash
 npx skills add breath57/dingtalk-skills \
-  -s 'dingtalk-document,dingtalk-ai-table,dingtalk-message,dingtalk-todo,dingtalk-contact,dingtalk-ai-web-search,dingtalk-calendar' \
-  -y
+  -s 'dingtalk-document,dingtalk-ai-table,dingtalk-message,dingtalk-todo,dingtalk-contact,dingtalk-ai-web-search,dingtalk-calendar'
 ```
-
-> `dingtalk-skill-creator` 和 `skill-creator` 为开发者工具，不在批量安装范围内。
 
 ### 开口说话
 
