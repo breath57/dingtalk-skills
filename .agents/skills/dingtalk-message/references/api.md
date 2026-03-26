@@ -597,6 +597,93 @@ Content-Type: application/json
 
 ---
 
+## 场景路由（收到用户请求后的判断逻辑）
+
+```
+用户想发消息
+├─ 发到群里？
+│  ├─ 通用群消息（含 @某人）→ 询问用户选择方式（见「群消息发送方式选择」）
+│  ├─ 明确需要撤回或查已读 → 企业机器人群聊
+│  └─ 正在处理机器人回调，直接回复 → sessionWebhook
+├─ 发给个人？
+│  ├─ 以机器人身份发私信 → 企业机器人单聊
+│  └─ 以应用身份推工作通知 → 工作通知
+├─ 撤回/查已读？
+│  ├─ 机器人消息 → 企业机器人的撤回/已读 API
+│  └─ 工作通知 → 工作通知的查询/撤回 API
+└─ 回复机器人收到的消息？ → sessionWebhook
+```
+
+### 群消息发送方式选择
+
+用户发起群消息请求时，**必须先询问**选择哪种方式：
+
+| 方式 | 需要提供 | 如何获取 | 说明 |
+|---|---|---|---|
+| **Webhook 机器人** | `WEBHOOK_URL` | 群设置 → 智能群助手 → 添加自定义机器人 → 复制 URL | 无需应用权限，配置最简单；支持 @某人（`at.atUserIds`） |
+| **企业内部应用机器人** | `openConversationId`（群会话 ID） | 机器人收到群消息时，回调体的 `conversationId` 字段即为该值 | 需要 `APP_KEY`/`APP_SECRET`；支持撤回、查已读 |
+
+> 推荐 Webhook，只需一个 URL 即可，无需任何应用权限。
+
+- 选 **Webhook**：收集 `DINGTALK_WEBHOOK_URL`（若启用加签还需 `DINGTALK_WEBHOOK_SECRET`），持久化后执行
+- 选 **企业机器人**：收集 `openConversationId`，复用已有的 `APP_KEY`/`APP_SECRET`，调用 `groupMessages/send`
+
+---
+
+## 身份标识
+
+**所有消息发送 API 均只接受 userId（staffId）**，不接受 unionId。
+
+| 标识 | 作用域 | 能否用于发消息 |
+|---|---|---|
+| `userId`（= `staffId`） | 单个企业内唯一 | ✅ 唯一接受的 ID |
+| `unionId` | 跨组织唯一 | ❌ 会被判定无效用户 |
+
+userId 获取方式：
+1. **机器人回调**：消息体 `senderStaffId` 字段
+2. **unionId → userId**：`bash scripts/dt_helper.sh --to-userid <unionId>`
+3. **手机号 → userId**：`POST /topapi/v2/user/getbymobile`
+4. **管理后台**：PC 端钉钉 → 工作台 → 管理后台 → 通讯录
+
+回调消息中的身份字段：
+
+| 字段 | 含义 | 可靠性 |
+|---|---|---|
+| `senderStaffId` | 发送者 userId | 企业内部群始终存在；外部群中外部用户可能为空 |
+| `senderUnionId` | 发送者 unionId | 始终存在 |
+
+> 注意 `result.unionid`（无下划线）有值，`result.union_id`（有下划线）在部分企业中为空。
+
+---
+
+## 消息类型速查
+
+### Webhook 消息类型
+
+直接在请求 body 的 `msgtype` 字段指定：`text` | `markdown` | `actionCard` | `link` | `feedCard`
+
+### 机器人消息类型
+
+通过 `msgKey` + `msgParam`（JSON 字符串）指定：
+
+| msgKey | 类型 | msgParam 关键字段 |
+|---|---|---|
+| `sampleText` | 文本 | `content` |
+| `sampleMarkdown` | Markdown | `title`, `text` |
+| `sampleActionCard` | ActionCard | `title`, `text`, `singleTitle`, `singleURL` |
+| `sampleLink` | 链接 | `title`, `text`, `messageUrl`, `picUrl` |
+| `sampleImageMsg` | 图片 | `photoURL` |
+
+> **重要**：`msgParam` 必须是 **JSON 字符串**，不是对象。
+
+### 工作通知消息类型
+
+在 `msg` 对象的 `msgtype` 字段指定：`text` | `markdown` | `action_card`
+
+> 注意工作通知的 `action_card` 用下划线（不同于 Webhook 的 `actionCard`）。
+
+---
+
 ## 错误码
 
 ### Webhook 错误码
