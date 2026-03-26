@@ -58,21 +58,16 @@ Agent 每次执行任务都需要将技能文件装入上下文，**skill 文件
 clawhub install breath57/dingtalk-document
 ```
 
-**2. skills.sh**（全通用方式，支持 Cursor、Claude、Copilot、OpenClaw 等几乎所有 Agent）
+**2. skills.sh**（全通用方式，支持 Cursor、Claude、Copilot、🦞 OpenClaw 等几乎所有 Agent）
 ```bash
 npx skills add breath57/dingtalk-skills@dingtalk-document
 ```
 
 **一键安装全部**（排除开发者专用技能）：
 ```bash
-npx skills add \
-  breath57/dingtalk-skills@dingtalk-document \
-  breath57/dingtalk-skills@dingtalk-ai-table \
-  breath57/dingtalk-skills@dingtalk-message \
-  breath57/dingtalk-skills@dingtalk-todo \
-  breath57/dingtalk-skills@dingtalk-contact \
-  breath57/dingtalk-skills@dingtalk-ai-web-search \
-  breath57/dingtalk-skills@dingtalk-calendar
+npx skills add breath57/dingtalk-skills \
+  -s 'dingtalk-document,dingtalk-ai-table,dingtalk-message,dingtalk-todo,dingtalk-contact,dingtalk-ai-web-search,dingtalk-calendar' \
+  -y
 ```
 
 > `dingtalk-skill-creator` 和 `skill-creator` 为开发者工具，不在批量安装范围内。
@@ -101,7 +96,7 @@ npx skills add \
 # 1. ClawHub
 clawhub install breath57/dingtalk-document
 
-# 2. skills.sh（全通用方式，支持 Cursor / Claude / Copilot / OpenClaw 等几乎所有 Agent）
+# 2. skills.sh（全通用方式，支持 Cursor / Claude / Copilot / 🦞 OpenClaw 等几乎所有 Agent）
 npx skills add breath57/dingtalk-skills@dingtalk-document
 ```
 
@@ -130,7 +125,7 @@ npx skills add breath57/dingtalk-skills@dingtalk-document
 # 1. ClawHub
 clawhub install breath57/dingtalk-ai-table
 
-# 2. skills.sh（全通用方式，支持 Cursor / Claude / Copilot / OpenClaw 等几乎所有 Agent）
+# 2. skills.sh（全通用方式，支持 Cursor / Claude / Copilot / 🦞 OpenClaw 等几乎所有 Agent）
 npx skills add breath57/dingtalk-skills@dingtalk-ai-table
 ```
 
@@ -158,7 +153,7 @@ npx skills add breath57/dingtalk-skills@dingtalk-ai-table
 # 1. ClawHub
 clawhub install breath57/dingtalk-message
 
-# 2. skills.sh（全通用方式，支持 Cursor / Claude / Copilot / OpenClaw 等几乎所有 Agent）
+# 2. skills.sh（全通用方式，支持 Cursor / Claude / Copilot / 🦞 OpenClaw 等几乎所有 Agent）
 npx skills add breath57/dingtalk-skills@dingtalk-message
 ```
 
@@ -189,7 +184,7 @@ npx skills add breath57/dingtalk-skills@dingtalk-message
 # 1. ClawHub
 clawhub install breath57/dingtalk-todo
 
-# 2. skills.sh（全通用方式，支持 Cursor / Claude / Copilot / OpenClaw 等几乎所有 Agent）
+# 2. skills.sh（全通用方式，支持 Cursor / Claude / Copilot / 🦞 OpenClaw 等几乎所有 Agent）
 npx skills add breath57/dingtalk-skills@dingtalk-todo
 ```
 
@@ -215,7 +210,7 @@ npx skills add breath57/dingtalk-skills@dingtalk-todo
 # 1. ClawHub
 clawhub install breath57/dingtalk-contact
 
-# 2. skills.sh（全通用方式，支持 Cursor / Claude / Copilot / OpenClaw 等几乎所有 Agent）
+# 2. skills.sh（全通用方式，支持 Cursor / Claude / Copilot / 🦞 OpenClaw 等几乎所有 Agent）
 npx skills add breath57/dingtalk-skills@dingtalk-contact
 ```
 
@@ -245,7 +240,7 @@ npx skills add breath57/dingtalk-skills@dingtalk-contact
 # 1. ClawHub
 clawhub install breath57/dingtalk-ai-web-search
 
-# 2. skills.sh（全通用方式，支持 Cursor / Claude / Copilot / OpenClaw 等几乎所有 Agent）
+# 2. skills.sh（全通用方式，支持 Cursor / Claude / Copilot / 🦞 OpenClaw 等几乎所有 Agent）
 npx skills add breath57/dingtalk-skills@dingtalk-ai-web-search
 ```
 
@@ -269,7 +264,7 @@ npx skills add breath57/dingtalk-skills@dingtalk-ai-web-search
 # 1. ClawHub
 clawhub install breath57/dingtalk-calendar
 
-# 2. skills.sh（全通用方式，支持 Cursor / Claude / Copilot / OpenClaw 等几乎所有 Agent）
+# 2. skills.sh（全通用方式，支持 Cursor / Claude / Copilot / 🦞 OpenClaw 等几乎所有 Agent）
 npx skills add breath57/dingtalk-skills@dingtalk-calendar
 ```
 
