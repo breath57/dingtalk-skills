@@ -66,7 +66,7 @@ npx skills add breath57/dingtalk-skills@dingtalk-document
 **一键安装全部**：
 ```bash
 npx skills add breath57/dingtalk-skills \
-  -s 'dingtalk-document,dingtalk-ai-table,dingtalk-message,dingtalk-todo,dingtalk-contact,dingtalk-ai-web-search,dingtalk-calendar'
+  --skill dingtalk-document dingtalk-ai-table dingtalk-message dingtalk-todo dingtalk-contact dingtalk-ai-web-search dingtalk-calendar
 ```
 
 ### 开口说话
