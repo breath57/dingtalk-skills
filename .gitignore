@@ -8,4 +8,7 @@ __pycache__/
 
 # local drafts & temp files (not for repo)
 docs/
+
+# traffic dashboard — local only
+traffic/
 temp/

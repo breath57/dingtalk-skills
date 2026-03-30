@@ -1,2 +1,0 @@
-# raw/ 目录存放每日原始 API 响应，由 collect-traffic.sh 自动生成
-# 文件命名格式：clones-YYYY-MM-DD.json / views-YYYY-MM-DD.json / repo-YYYY-MM-DD.json
