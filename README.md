@@ -4,7 +4,7 @@
 
 ---
 
-**已适配 [OpenClaw](https://openclaw.ai) 🦞**，可从 [ClawHub](https://clawhub.ai) · [Skills.sh](https://skills.sh/breath57/dingtalk-skills) 一键安装。
+**已适配 [OpenClaw](https://openclaw.ai) 🦞 & [Hermes](https://github.com/NousResearch/hermes-agent)**，可从 [ClawHub](https://clawhub.ai) · [Skills.sh](https://skills.sh/breath57/dingtalk-skills) 一键安装。
 
 让 AI Agent 直接操作钉钉——无需手写 API 调用，无需手动管理 Token，对话即操作。
 
@@ -51,7 +51,7 @@ Agent 每次执行任务都需要将技能文件装入上下文，**skill 文件
 
 ### 安装技能
 
-每个技能支持两种安装方式：
+每个技能支持三种安装方式（ClawHub / skills.sh / Hermes）：
 
 **1. ClawHub**
 ```bash
@@ -63,10 +63,22 @@ clawhub install breath57/dingtalk-document
 npx skills add breath57/dingtalk-skills@dingtalk-document
 ```
 
+**3. Hermes**
+```bash
+npx skills add breath57/dingtalk-skills@dingtalk-document --agent hermes-agent -y
+```
+
 **一键安装全部**：
 ```bash
 npx skills add breath57/dingtalk-skills \
   --skill dingtalk-document dingtalk-ai-table dingtalk-message dingtalk-todo dingtalk-contact dingtalk-ai-web-search dingtalk-calendar
+```
+
+**一键安装全部（Hermes）**：
+```bash
+npx skills add breath57/dingtalk-skills \
+  --skill dingtalk-document dingtalk-ai-table dingtalk-message dingtalk-todo dingtalk-contact dingtalk-ai-web-search dingtalk-calendar \
+  --agent hermes-agent -y
 ```
 
 ### 开口说话
@@ -95,6 +107,9 @@ clawhub install breath57/dingtalk-document
 
 # 2. skills.sh（全通用方式，支持 Cursor / Claude / Copilot / 🦞 OpenClaw 等几乎所有 Agent）
 npx skills add breath57/dingtalk-skills@dingtalk-document
+
+# 3. Hermes
+npx skills add breath57/dingtalk-skills@dingtalk-document --agent hermes-agent -y
 ```
 
 | 能力 | 说明 |
@@ -124,6 +139,9 @@ clawhub install breath57/dingtalk-ai-table
 
 # 2. skills.sh（全通用方式，支持 Cursor / Claude / Copilot / 🦞 OpenClaw 等几乎所有 Agent）
 npx skills add breath57/dingtalk-skills@dingtalk-ai-table
+
+# 3. Hermes
+npx skills add breath57/dingtalk-skills@dingtalk-ai-table --agent hermes-agent -y
 ```
 
 | 能力 | 说明 |
@@ -152,6 +170,9 @@ clawhub install breath57/dingtalk-message
 
 # 2. skills.sh（全通用方式，支持 Cursor / Claude / Copilot / 🦞 OpenClaw 等几乎所有 Agent）
 npx skills add breath57/dingtalk-skills@dingtalk-message
+
+# 3. Hermes
+npx skills add breath57/dingtalk-skills@dingtalk-message --agent hermes-agent -y
 ```
 
 | 能力 | 说明 |
@@ -183,6 +204,9 @@ clawhub install breath57/dingtalk-todo
 
 # 2. skills.sh（全通用方式，支持 Cursor / Claude / Copilot / 🦞 OpenClaw 等几乎所有 Agent）
 npx skills add breath57/dingtalk-skills@dingtalk-todo
+
+# 3. Hermes
+npx skills add breath57/dingtalk-skills@dingtalk-todo --agent hermes-agent -y
 ```
 
 | 能力 | 说明 |
@@ -209,6 +233,9 @@ clawhub install breath57/dingtalk-contact
 
 # 2. skills.sh（全通用方式，支持 Cursor / Claude / Copilot / 🦞 OpenClaw 等几乎所有 Agent）
 npx skills add breath57/dingtalk-skills@dingtalk-contact
+
+# 3. Hermes
+npx skills add breath57/dingtalk-skills@dingtalk-contact --agent hermes-agent -y
 ```
 
 | 能力 | 说明 |
@@ -239,6 +266,9 @@ clawhub install breath57/dingtalk-ai-web-search
 
 # 2. skills.sh（全通用方式，支持 Cursor / Claude / Copilot / 🦞 OpenClaw 等几乎所有 Agent）
 npx skills add breath57/dingtalk-skills@dingtalk-ai-web-search
+
+# 3. Hermes
+npx skills add breath57/dingtalk-skills@dingtalk-ai-web-search --agent hermes-agent -y
 ```
 
 | 能力 | 说明 |
@@ -263,6 +293,9 @@ clawhub install breath57/dingtalk-calendar
 
 # 2. skills.sh（全通用方式，支持 Cursor / Claude / Copilot / 🦞 OpenClaw 等几乎所有 Agent）
 npx skills add breath57/dingtalk-skills@dingtalk-calendar
+
+# 3. Hermes
+npx skills add breath57/dingtalk-skills@dingtalk-calendar --agent hermes-agent -y
 ```
 
 | 能力 | 说明 |

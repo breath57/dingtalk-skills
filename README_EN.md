@@ -4,7 +4,7 @@
 
 ---
 
-**Adapted for [OpenClaw](https://openclaw.ai) 🦞** — install from [ClawHub](https://clawhub.ai) · [Skills.sh](https://skills.sh/breath57/dingtalk-skills) with one click.
+**Adapted for [OpenClaw](https://openclaw.ai) 🦞 & [Hermes](https://github.com/NousResearch/hermes-agent)** — install from [ClawHub](https://clawhub.ai) · [Skills.sh](https://skills.sh/breath57/dingtalk-skills) with one click.
 
 Let your AI Agent operate DingTalk directly — no manual API calls, no token management, just conversation.
 
@@ -51,7 +51,7 @@ Every task execution loads skill files into the agent's context window — **the
 
 ### Install a Skill
 
-Each skill supports two installation methods:
+Each skill supports three installation methods (ClawHub / skills.sh / Hermes):
 
 **1. ClawHub**
 ```bash
@@ -63,10 +63,22 @@ clawhub install breath57/dingtalk-document
 npx skills add breath57/dingtalk-skills@dingtalk-document
 ```
 
+**3. Hermes**
+```bash
+npx skills add breath57/dingtalk-skills@dingtalk-document --agent hermes-agent -y
+```
+
 **Install all skills at once**:
 ```bash
 npx skills add breath57/dingtalk-skills \
   --skill dingtalk-document dingtalk-ai-table dingtalk-message dingtalk-todo dingtalk-contact dingtalk-ai-web-search dingtalk-calendar
+```
+
+**Install all skills at once (Hermes)**:
+```bash
+npx skills add breath57/dingtalk-skills \
+  --skill dingtalk-document dingtalk-ai-table dingtalk-message dingtalk-todo dingtalk-contact dingtalk-ai-web-search dingtalk-calendar \
+  --agent hermes-agent -y
 ```
 
 ### Just Talk
@@ -95,6 +107,9 @@ clawhub install breath57/dingtalk-document
 
 # 2. skills.sh (universal — works with Cursor / Claude / Copilot / 🦞 OpenClaw and almost any Agent)
 npx skills add breath57/dingtalk-skills@dingtalk-document
+
+# 3. Hermes
+npx skills add breath57/dingtalk-skills@dingtalk-document --agent hermes-agent -y
 ```
 
 | Capability | Description |
@@ -124,6 +139,9 @@ clawhub install breath57/dingtalk-ai-table
 
 # 2. skills.sh (universal — works with Cursor / Claude / Copilot / 🦞 OpenClaw and almost any Agent)
 npx skills add breath57/dingtalk-skills@dingtalk-ai-table
+
+# 3. Hermes
+npx skills add breath57/dingtalk-skills@dingtalk-ai-table --agent hermes-agent -y
 ```
 
 | Capability | Description |
@@ -152,6 +170,9 @@ clawhub install breath57/dingtalk-message
 
 # 2. skills.sh (universal — works with Cursor / Claude / Copilot / 🦞 OpenClaw and almost any Agent)
 npx skills add breath57/dingtalk-skills@dingtalk-message
+
+# 3. Hermes
+npx skills add breath57/dingtalk-skills@dingtalk-message --agent hermes-agent -y
 ```
 
 | Capability | Description |
@@ -183,6 +204,9 @@ clawhub install breath57/dingtalk-todo
 
 # 2. skills.sh (universal — works with Cursor / Claude / Copilot / 🦞 OpenClaw and almost any Agent)
 npx skills add breath57/dingtalk-skills@dingtalk-todo
+
+# 3. Hermes
+npx skills add breath57/dingtalk-skills@dingtalk-todo --agent hermes-agent -y
 ```
 
 | Capability | Description |
@@ -209,6 +233,9 @@ clawhub install breath57/dingtalk-contact
 
 # 2. skills.sh (universal — works with Cursor / Claude / Copilot / 🦞 OpenClaw and almost any Agent)
 npx skills add breath57/dingtalk-skills@dingtalk-contact
+
+# 3. Hermes
+npx skills add breath57/dingtalk-skills@dingtalk-contact --agent hermes-agent -y
 ```
 
 | Capability | Description |
@@ -239,6 +266,9 @@ clawhub install breath57/dingtalk-ai-web-search
 
 # 2. skills.sh (universal — works with Cursor / Claude / Copilot / 🦞 OpenClaw and almost any Agent)
 npx skills add breath57/dingtalk-skills@dingtalk-ai-web-search
+
+# 3. Hermes
+npx skills add breath57/dingtalk-skills@dingtalk-ai-web-search --agent hermes-agent -y
 ```
 
 | Capability | Description |
@@ -263,6 +293,9 @@ clawhub install breath57/dingtalk-calendar
 
 # 2. skills.sh (universal — works with Cursor / Claude / Copilot / 🦞 OpenClaw and almost any Agent)
 npx skills add breath57/dingtalk-skills@dingtalk-calendar
+
+# 3. Hermes
+npx skills add breath57/dingtalk-skills@dingtalk-calendar --agent hermes-agent -y
 ```
 
 | Capability | Description |
