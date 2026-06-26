@@ -37,6 +37,7 @@ Agent 每次执行任务都需要将技能文件装入上下文，**skill 文件
 | [dingtalk-contact](#dingtalk-contact--钉钉通讯录) | ✅ 已上线 | 通讯录：搜索用户/部门、用户详情、部门树、成员列表 | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-contact) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/breath57/dingtalk-skills/dingtalk-contact) |
 | [dingtalk-ai-web-search](#dingtalk-ai-web-search--网页搜索) | ✅ 已上线 | 网页搜索：关键词搜索、时间过滤、JSON 输出 | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-ai-web-search) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/breath57/dingtalk-skills/dingtalk-ai-web-search) |
 | [dingtalk-calendar](#dingtalk-calendar--钉钉日程) | ✅ 已上线 | 日程：CRUD、闲忙、视频会议、会议室、签到签退 | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-calendar) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/breath57/dingtalk-skills/dingtalk-calendar) |
+| [dingtalk-knowledge-search](#dingtalk-knowledge-search--钉钉知识库搜索与读取) | ✅ 已上线 | 知识库搜索、文档读取导出 Markdown、图片/diagram、表格 CSV、文件下载、PDF 转文本 | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-knowledge-search) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/breath57/dingtalk-skills/dingtalk-knowledge-search) |
 | dingtalk-approval | 🗓️ 计划中 | 审批流程管理 | — |
 | dingtalk-attendance | 🗓️ 计划中 | 考勤打卡管理 | — |
 | dingtalk-meeting | 🗓️ 计划中 | 视频会议管理 | — |
@@ -71,13 +72,13 @@ npx skills add breath57/dingtalk-skills@dingtalk-document --agent hermes-agent -
 **一键安装全部**：
 ```bash
 npx skills add breath57/dingtalk-skills \
-  --skill dingtalk-document dingtalk-ai-table dingtalk-message dingtalk-todo dingtalk-contact dingtalk-ai-web-search dingtalk-calendar
+  --skill dingtalk-document dingtalk-ai-table dingtalk-message dingtalk-todo dingtalk-contact dingtalk-ai-web-search dingtalk-calendar dingtalk-knowledge-search
 ```
 
 **一键安装全部（Hermes）**：
 ```bash
 npx skills add breath57/dingtalk-skills \
-  --skill dingtalk-document dingtalk-ai-table dingtalk-message dingtalk-todo dingtalk-contact dingtalk-ai-web-search dingtalk-calendar \
+  --skill dingtalk-document dingtalk-ai-table dingtalk-message dingtalk-todo dingtalk-contact dingtalk-ai-web-search dingtalk-calendar dingtalk-knowledge-search \
   --agent hermes-agent -y
 ```
 
@@ -311,6 +312,39 @@ npx skills add breath57/dingtalk-skills@dingtalk-calendar --agent hermes-agent -
 
 ---
 
+### dingtalk-knowledge-search — 钉钉知识库搜索与读取
+
+🦞 [ClawHub · dingtalk-knowledge-search](https://clawhub.ai/breath57/dingtalk-knowledge-search)
+
+**安装**
+```bash
+# 1. ClawHub
+clawhub install breath57/dingtalk-knowledge-search
+
+# 2. skills.sh（全通用方式，支持 Cursor / Claude / Copilot / 🦞 OpenClaw 等几乎所有 Agent）
+npx skills add breath57/dingtalk-skills@dingtalk-knowledge-search
+
+# 3. Hermes
+npx skills add breath57/dingtalk-skills@dingtalk-knowledge-search --agent hermes-agent -y
+```
+
+| 能力 | 说明 |
+|---|---|
+| 知识库搜索 | 按关键词搜索知识库，返回匹配文档列表 |
+| 读取文档正文 | 导出 Markdown；长内容写入文件并返回路径 |
+| 文件下载 | PDF / Word / PPT / Excel / CSV / 图片 / ZIP 等原文件下载 |
+| PDF 转文本 | `--mode pdf2text`，需系统 `pdftotext`（poppler-utils） |
+| 表格导出 CSV | 钉钉表格 / AI 表格 / 多维表按 sheet 导出 |
+| 图片本地化 | `--with img-local`，图片下载到 `.assets/` |
+| 图片代理 | `--with img`，Markdown 使用代理链接，节省本地空间 |
+| diagram 导出 | `--with diagram`，保留流程图 / 结构图源码 |
+| 输出缓存 | 跨项目复用，按远端 modifiedTime 判断是否复用 |
+| 扫码登录 | 需要确认身份时返回二维码截图路径，扫码后继续执行 |
+
+> 示例："帮我了解一下 A 项目的背景，相关文档导出 Markdown 到当前项目" → Agent 搜索知识库、读取正文、本地化图片并写入目录。
+
+---
+
 ## 项目结构
 
 ```
@@ -345,6 +379,12 @@ npx skills add breath57/dingtalk-skills@dingtalk-calendar --agent hermes-agent -
 │   │   └── dt_helper.sh
 │   └── references/
 │       └── api.md
+├── dingtalk-knowledge-search/
+│   ├── SKILL.md
+│   ├── scripts/
+│   │   └── cli.py
+│   └── references/
+│       └── browser-login-state.md
 └── dingtalk-skill-creator/
     └── SKILL.md
 ```

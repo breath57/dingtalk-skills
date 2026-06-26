@@ -55,6 +55,12 @@ dingtalk-skills/
         │   │   └── dt_helper.sh
         │   └── references/
         │       └── api.md
+        ├── dingtalk-knowledge-search/ # 钉钉知识库搜索与读取技能（Python）
+        │   ├── SKILL.md
+        │   ├── scripts/
+        │   │   └── cli.py
+        │   └── references/
+        │       └── browser-login-state.md
         └── dingtalk-skill-creator/   # 技能创建流程工具
             └── SKILL.md
 ```
@@ -72,6 +78,7 @@ dingtalk-skills/
 | `dingtalk-contact` | `.agents/skills/dingtalk-contact/` | ✅ 可用 | 钉钉通讯录：按关键词搜索用户/部门、获取用户完整详情、部门树遍历、成员列表、身份转换、员工总数 |
 | `dingtalk-ai-web-search` | `.agents/skills/dingtalk-ai-web-search/` | ✅ 可用 | 网页搜索与实时信息检索：查最新资讯/实时数据/技术文档，基于小宿AI智能搜索，支持时间过滤与 JSON 输出 |
 | `dingtalk-calendar` | `.agents/skills/dingtalk-calendar/` | ✅ 可用 | 钉钉日程：主日历 CRUD、闲忙、视频会议、会议室忙闲与绑定、签到签退与链接、循环/订阅说明（见 SKILL） |
+| `dingtalk-knowledge-search` | `.agents/skills/dingtalk-knowledge-search/` | ✅ 可用 | 钉钉知识库搜索与读取：搜索知识库、读取文档正文导出 Markdown、图片/diagram 本地化、表格导出 CSV、文件下载、PDF 转文本（依赖 Python 3） |
 | `dingtalk-skill-creator` | `.agents/skills/dingtalk-skill-creator/` | ✅ 可用 | 标准化创建新钉钉技能的开发流程工具 |
 | `skill-creator` | `.agents/skills/skill-creator/` | ✅ 可用 | 技能开发框架（由 anthropics/skills 提供） |
 

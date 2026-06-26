@@ -37,6 +37,7 @@ Every task execution loads skill files into the agent's context window — **the
 | [dingtalk-contact](#dingtalk-contact--dingtalk-directory) | ✅ Available | Directory: search users/departments, user details, department tree | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-contact) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/breath57/dingtalk-skills/dingtalk-contact) |
 | [dingtalk-ai-web-search](#dingtalk-ai-web-search--web-search) | ✅ Available | Web search: keyword search, time filter, JSON output | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-ai-web-search) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/breath57/dingtalk-skills/dingtalk-ai-web-search) |
 | [dingtalk-calendar](#dingtalk-calendar--calendar--schedule) | ✅ Available | Calendar: CRUD, free/busy, video meetings, rooms, sign-in/out | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-calendar) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/breath57/dingtalk-skills/dingtalk-calendar) |
+| [dingtalk-knowledge-search](#dingtalk-knowledge-search--knowledge-base-search--read) | ✅ Available | Knowledge base search, doc read to Markdown, images/diagrams, table CSV, file download, PDF→text | [🦞 ClawHub](https://clawhub.ai/breath57/dingtalk-knowledge-search) · [<img src="https://avatars.githubusercontent.com/u/108547162?s=200&v=4" height="16"> Skills.sh](https://skills.sh/breath57/dingtalk-skills/dingtalk-knowledge-search) |
 | dingtalk-approval | 🗓️ Planned | Approval workflow management | — |
 | dingtalk-attendance | 🗓️ Planned | Attendance & check-in management | — |
 | dingtalk-meeting | 🗓️ Planned | Video meeting management | — |
@@ -71,13 +72,13 @@ npx skills add breath57/dingtalk-skills@dingtalk-document --agent hermes-agent -
 **Install all skills at once**:
 ```bash
 npx skills add breath57/dingtalk-skills \
-  --skill dingtalk-document dingtalk-ai-table dingtalk-message dingtalk-todo dingtalk-contact dingtalk-ai-web-search dingtalk-calendar
+  --skill dingtalk-document dingtalk-ai-table dingtalk-message dingtalk-todo dingtalk-contact dingtalk-ai-web-search dingtalk-calendar dingtalk-knowledge-search
 ```
 
 **Install all skills at once (Hermes)**:
 ```bash
 npx skills add breath57/dingtalk-skills \
-  --skill dingtalk-document dingtalk-ai-table dingtalk-message dingtalk-todo dingtalk-contact dingtalk-ai-web-search dingtalk-calendar \
+  --skill dingtalk-document dingtalk-ai-table dingtalk-message dingtalk-todo dingtalk-contact dingtalk-ai-web-search dingtalk-calendar dingtalk-knowledge-search \
   --agent hermes-agent -y
 ```
 
@@ -308,6 +309,39 @@ npx skills add breath57/dingtalk-skills@dingtalk-calendar --agent hermes-agent -
 | Recurrence | `recurrence` on create; subscribed calendars need extra permissions |
 
 > Example: "Add a 1h meeting tomorrow at 3pm titled Review" → Agent builds ISO8601 times and creates the event.
+
+---
+
+### dingtalk-knowledge-search — Knowledge Base Search & Read
+
+🦞 [ClawHub · dingtalk-knowledge-search](https://clawhub.ai/breath57/dingtalk-knowledge-search)
+
+**Install**
+```bash
+# 1. ClawHub
+clawhub install breath57/dingtalk-knowledge-search
+
+# 2. skills.sh (universal — works with Cursor / Claude / Copilot / 🦞 OpenClaw and almost any Agent)
+npx skills add breath57/dingtalk-skills@dingtalk-knowledge-search
+
+# 3. Hermes
+npx skills add breath57/dingtalk-skills@dingtalk-knowledge-search --agent hermes-agent -y
+```
+
+| Capability | Description |
+|---|---|
+| Knowledge base search | Search by keywords, return matching document list |
+| Read document body | Export to Markdown; long content written to a file and path returned |
+| File download | Download PDF / Word / PPT / Excel / CSV / image / ZIP originals |
+| PDF to text | `--mode pdf2text`, requires system `pdftotext` (poppler-utils) |
+| Table export to CSV | DingTalk workbook / AI table sheets exported per-sheet |
+| Image localization | `--with img-local`, images downloaded to `.assets/` |
+| Image proxy | `--with img`, Markdown uses proxy links to save local space |
+| Diagram export | `--with diagram`, keep flowchart / structure diagram sources |
+| Output cache | Reuse across projects by remote modifiedTime |
+| QR login | Returns a QR screenshot path when identity confirmation is needed; resume after scan |
+
+> Example: "Get up to speed on Project A's background and export related docs to Markdown in the current project" → Agent searches the knowledge base, reads bodies, localizes images, and writes to the directory.
 
 ---
 

@@ -12,3 +12,8 @@ docs/
 # traffic dashboard — local only
 traffic/
 temp/
+
+# skill runtime artifacts (dingtalk-knowledge-search outputs)
+.skills-workspace/
+dingtalk-docs/
+
